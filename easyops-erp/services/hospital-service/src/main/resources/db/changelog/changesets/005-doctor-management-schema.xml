@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Phase 1.1: Doctor Management Schema
+        This changeset creates the doctor_departments and doctors tables
+        as prerequisites for the Prescription & EHR module
+    -->
+    <changeSet id="005-doctor-management-schema" author="hospital-service">
+        <comment>Phase 1.1 - Create Hospital Doctor Management schema (Doctor Departments and Doctors tables)</comment>
+        <sqlFile path="005-doctor-management-schema.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

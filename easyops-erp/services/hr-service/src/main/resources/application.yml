@@ -1,0 +1,145 @@
+spring:
+  application:
+    name: hr-service
+  
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:easyops}
+    username: ${POSTGRES_USER:easyops}
+    password: ${POSTGRES_PASSWORD:easyops123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: hr
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: false
+  
+  cache:
+    type: none
+
+server:
+  port: 8096
+
+services:
+  rbac:
+    base-url: ${RBAC_SERVICE_BASE_URL:http://localhost:8084}
+  accounting:
+    base-url: ${ACCOUNTING_SERVICE_BASE_URL:http://localhost:8088/api}
+
+integration:
+  accounting:
+    system-user-id: ${ACCOUNTING_INTEGRATION_USER_ID:00000000-0000-0000-0000-000000000001}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    lease-renewal-interval-in-seconds: 30
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: false
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+hr:
+  loans:
+    reminder:
+      enabled: true
+      cron: "0 0 7 * * ?"
+      days-ahead: 7
+      cooldown-days: 7
+  payroll:
+    # INT-43 / defaults when no hr.epf_organization_policy row exists
+    default-epf-employee-rate: 12.00
+    default-epf-employer-rate: 12.00
+    fail-on-missing-epf-policy: false
+    # INT-43: fail populate-from-salary when statutory INCOME_TAX component exists but no tax_slabs for the year
+    fail-on-missing-tax-slabs: false
+    # INT-16/INT-17 ESI (India-style defaults; override per SalaryComponent percentageValue)
+    esi-wage-ceiling: 21000
+    default-esi-employee-rate: 0.75
+    default-esi-employer-rate: 3.25
+
+  integration:
+    # Payroll runs in hr-service; set true only if a separate payroll-service implements the HTTP callbacks
+    external-payroll-service:
+      enabled: false
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+

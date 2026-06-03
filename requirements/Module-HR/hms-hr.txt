@@ -1,0 +1,168 @@
+HR Module
+
+1. Purpose
+The HR Module manages all employee-related processes, including employee data, attendance, leave, shift management, payroll, and accounting integration. It ensures accurate salary computation, compliance with hospital policies, and audit-ready reporting.
+
+2. Master Data / Configure
+2.1 Department Info
+Department name and code
+Department head
+Mapping employees
+Approval Matrix Configuration
+2.2 Designation Info
+Add / Edit / Delete designations
+Link to department
+Hierarchy level (for reporting and leave approvals)
+2.3 Employee Registration
+Personal info: Name, DOB, Contact, Address
+Professional info: Designation, Department, Joining Date, Employee ID
+Bank info for salary transfer
+Work status: Active / Inactive / Resigned
+
+3. Attendance & Shift Management
+3.1 Shift Info
+Shift name, timing, grace period, break time
+Night / Day / Rotational shifts
+3.2 Employee Roster
+Individual / Department-wise roster
+Monthly roster planning
+Roster details, including holidays, leave, duty changes
+3.3 Attendance
+Automatic import from biometric / device
+Manual adjustment for exceptions
+Grace Time Entry for late arrivals
+3.4 Duty Info Management
+Assign duties to employees
+Replace employee's duty in case of absence
+3.5 Overtime Setting and Entry
+Configure overtime rates per shift/employee category
+Record overtime hours
+Integration with payroll
+
+4. Leave & Holiday Management
+4.1 Employee Leave
+Employee leave form submission
+In-charge verification
+Management approval
+4.2 Holiday Management
+Holiday setup per year / department
+Employee-specific holiday info
+4.3 Leave Deduction
+Automatic leave deduction from salary
+Deduction based on in/out timing or leave balance
+5. Payroll & Salary Management
+5.1 Salary Components
+Pay register creation
+Increment salary
+Salary additions (allowances, incentives)
+Salary deductions (loan, leave, tax, penalties)
+5.2 Loan and Advance
+Loan issuance to employees
+Loan refund/deduction
+Integration with payroll
+5.3 Bonus & Incentives
+Create bonus registers
+Link to payroll
+Staff category-wise bonuses
+5.4 Payroll Processing
+Create a salary per employee per month
+Automatic calculation based on attendance, leave, overtime, bonuses, deductions
+Generates salary slips
+
+6. Integration & Accounting
+Payroll impact on accounts:
+Salary Expense Account (Debit)
+Employee Loan / Payable / Bonus Account (Credit)
+Leave deduction and overtime also reflected in accounting
+Audit-ready ledger entries for HR transactions
+
+7. High-Level HR Module Flow
+Designation / Department Setup
+        ↓
+Employee Registration
+        ↓
+Shift & Roster Setup
+        ↓
+Attendance Capture (Device)
+        ↓
+Duty / Overtime Management
+        ↓
+Leave Request → Verification → Approval
+        ↓
+Payroll Processing
+        ↓
+Salary / Bonus / Loan / Deduction Integration
+        ↓
+Accounts Posting (Salary Expense / Payable)
+        ↓
+Reports / Salary Slip Generation
+
+8. Key Reports
+Employee List / Active Status
+Monthly Attendance Report
+Shift & Roster Report
+Leave Summary / Leave Balance
+Payroll Summary / Pay Register
+Loan & Advance Ledger
+Bonus Register
+Increment / Salary History
+
+
+
+
+9. Approval Matrix Configuration
+Field Name
+Description
+Data Type
+Required
+Validation
+Department ID
+Unique department identifier
+Auto Suggest
+Yes
+System generated, unique, read-only
+Department Name
+Name of the department
+Text
+Yes
+Required, must be unique
+No. of Approvers
+Number of approval levels
+Integer
+Yes
+Must be ≥ 1
+Approver Employee ID
+Employee ID(s) assigned as approvers
+Dynamic Dropdown (Employee List)
+Yes
+Must match active employee ID
+
+Dynamic Rule (Important)
+If No. of Approvers = 1 → Show 1 Approver Employee ID field
+If No. of Approvers = 2 → Show 2 Approver Employee ID fields
+If No. of Approvers = 3 → Show 3 Approver Employee ID fields
+And so on…
+So the form should dynamically generate:
+Approver Level
+Employee ID
+Level 1
+Select Employee
+Level 2
+Select Employee
+Level 3
+Select Employee
+
+
+Validation Rules
+Approver Employee IDs cannot be duplicated.
+All approver fields must be filled as per number entered.
+Employee must be active.
+Sequence defines approval hierarchy (Level 1 → Level 2 → Level 3).
+
+Optional / New Ideas
+Employee self-service portal for leave requests, salary slips
+Automatic SMS / Email notification for attendance anomalies or salary credited
+Integration with the Hospital Accounting Module for automated ledger entries
+Role-based access control (HR, Management, Employee)
+
+

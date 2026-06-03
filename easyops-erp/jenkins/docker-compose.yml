@@ -1,0 +1,25 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: easyops-jenkins:lts-jdk21
+    container_name: easyops-jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "18088:8080"
+      - "55001:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+      - JENKINS_BOOTSTRAP_JOB_NAME=aurora-hms-ci-cd
+      - JENKINS_BOOTSTRAP_GITHUB_URL=https://github.com/togetherGithub/aurora-hms.git
+      - JENKINS_BOOTSTRAP_BRANCH=*/main
+      - JENKINS_BOOTSTRAP_SCRIPT_PATH=easyops-erp/Jenkinsfile
+      - JENKINS_BOOTSTRAP_CREDENTIALS_ID=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
+
+volumes:
+  jenkins_home:

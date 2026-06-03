@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Merge lifecycleKind into variables_schema.allowed for existing DBs (005 only runs when no template exists). -->
+    <changeSet id="communication-006-appointment-lifecycle-kind-in-schema" author="aurora-hms">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <comment>Add lifecycleKind to appointment.lifecycle SMS template variables_schema.allowed when missing.</comment>
+        <sql>
+            UPDATE communication.comm_template t
+            SET variables_schema = jsonb_set(
+                t.variables_schema::jsonb,
+                '{allowed}',
+                COALESCE(t.variables_schema::jsonb->'allowed', '[]'::jsonb) || jsonb_build_array('lifecycleKind')
+            )::text
+            WHERE t.template_key = 'appointment.lifecycle'
+              AND t.channel = 'SMS'
+              AND t.variables_schema IS NOT NULL
+              AND length(trim(t.variables_schema)) > 0
+              AND NOT (COALESCE(t.variables_schema::jsonb->'allowed', '[]'::jsonb) @> '["lifecycleKind"]'::jsonb);
+        </sql>
+    </changeSet>
+</databaseChangeLog>

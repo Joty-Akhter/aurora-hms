@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Add Missing Prescription Fields
+        This changeset adds formulary, insurance, and cost-related fields to the prescriptions table
+    -->
+    <changeSet id="004-add-prescription-fields" author="hospital-service">
+        <comment>Add missing formulary and cost-related fields to prescriptions table</comment>
+        <sqlFile path="004-add-prescription-fields.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

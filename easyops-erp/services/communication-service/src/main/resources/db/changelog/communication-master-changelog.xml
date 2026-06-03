@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <include file="changesets/001-phase1-template-and-delivery-foundation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/002-phase2-template-versioning-and-activation.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/003-phase5-policy-preferences-localization.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/004-phase3-index-alignment.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/005-appointment-sms-template-en.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/006-appointment-lifecycle-kind-schema.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/007-appointment-sms-template-bn.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

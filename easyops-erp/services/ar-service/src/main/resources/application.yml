@@ -1,0 +1,133 @@
+spring:
+  application:
+    name: ar-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: accounting
+  
+  cache:
+    type: redis
+  
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
+
+server:
+  port: 8090
+
+services:
+  rbac:
+    base-url: ${RBAC_SERVICE_BASE_URL:http://localhost:8084}
+  accounting:
+    base-url: ${ACCOUNTING_SERVICE_BASE_URL:http://localhost:8088}
+  bank:
+    base-url: ${BANK_SERVICE_BASE_URL:http://localhost:8092}
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+# Management & Monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+  health:
+    defaults:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.easyops: DEBUG
+    org.springframework: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# OpenAPI Documentation
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+# AR Service Configuration
+ar:
+  invoice:
+    auto-number: true
+    number-prefix: "INV"
+  receipt:
+    auto-number: true
+    number-prefix: "RCT"
+  validation:
+    enforce-credit-limit: true
+    check-overdue: true
+  reporting:
+    aging-buckets: "0,30,60,90"
+    cache-enabled: true
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://postgres:5432/easyops
+    username: easyops
+    password: easyops123
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+

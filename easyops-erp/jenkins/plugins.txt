@@ -1,0 +1,7 @@
+configuration-as-code
+github
+github-branch-source
+git
+workflow-aggregator
+docker-workflow
+credentials-binding

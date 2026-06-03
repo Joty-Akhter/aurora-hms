@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="communication-phase2-002-template-activation" author="codex">
+        <sql>
+            ALTER TABLE communication.comm_template
+                ADD COLUMN IF NOT EXISTS activated_at TIMESTAMP WITH TIME ZONE,
+                ADD COLUMN IF NOT EXISTS activated_by VARCHAR(100);
+
+            UPDATE communication.comm_template
+               SET activated_at = COALESCE(activated_at, updated_at, created_at, NOW()),
+                   activated_by = COALESCE(activated_by, 'system-migration')
+             WHERE status = 'ACTIVE';
+
+            CREATE UNIQUE INDEX IF NOT EXISTS uq_comm_template_single_active
+                ON communication.comm_template (template_key, channel, locale)
+                WHERE status = 'ACTIVE';
+        </sql>
+        <rollback>
+            DROP INDEX IF EXISTS communication.uq_comm_template_single_active;
+            ALTER TABLE communication.comm_template
+                DROP COLUMN IF EXISTS activated_at,
+                DROP COLUMN IF EXISTS activated_by;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

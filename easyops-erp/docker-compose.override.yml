@@ -1,0 +1,19 @@
+# To point Liquibase at a different DB: add a "liquibase" entry under "services"
+# with environment: LIQUIBASE_COMMAND_URL, USERNAME, PASSWORD and depends_on: []
+# then run: docker compose run --no-deps --rm liquibase
+
+services:
+  ap-service:
+    build:
+      context: .
+      dockerfile: services/ap-service/Dockerfile.dev
+      args:
+        - MAVEN_OPTS=-Xmx2048m -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.retryHandler.requestSentEnabled=true -Dmaven.wagon.http.retryHandler.delay=2000
+    environment:
+      - MAVEN_OPTS=-Xmx2048m -Dmaven.wagon.http.retryHandler.count=5 -Dmaven.wagon.http.retryHandler.requestSentEnabled=true -Dmaven.wagon.http.retryHandler.delay=2000
+    volumes:
+      # Mount Maven local repository to persist dependencies
+      - maven-cache:/root/.m2
+volumes:
+  maven-cache:
+    driver: local

@@ -1,0 +1,467 @@
+Central Pharmacy & Outlet Pharmacy Management System (SRS)
+
+
+
+
+
+
+1. Introduction
+1.1 Purpose
+This document defines the functional and business requirements for the Central Pharmacy & Outlet Pharmacy Management System. The module manages medicine procurement, central storage, distribution to outlet pharmacies, inter‑pharmacy transfers, sales, returns, stock adjustments, and accounting‑ready reporting.
+1.2 Scope
+The system supports:
+One Central Store (main warehouse)
+Multiple Outlet Pharmacies (OPD/IPD/Departmental)
+Individual stock maintenance per pharmacy
+Centralized approval and audit control
+1.3 Definitions
+Central Store: Main warehouse receiving medicines from suppliers
+Outlet Pharmacy: Pharmacy unit dispensing medicines
+Requisition: Request for medicine transfer
+GRN: Goods Receive Note
+
+2. System Overview
+2.1 High-Level Process Flow
+Supplier → Central Store (Receive)
+Central Store → Outlet Pharmacy (Distribution)
+Outlet ↔ Outlet (Inter‑pharmacy transfer)
+Outlet → Patient / Department (Issue / Sale)
+Returns, adjustments, and reporting
+
+3. Master Configuration
+3.1 Company Information
+Purpose: Manage supplier/manufacturer details
+Fields:
+Field Name
+Description
+Data Type
+Required
+Validation
+Company ID
+Unique company identifier
+Text / Auto
+Yes
+System generated, unique, read-only
+Company Name
+Name of the company
+Text
+Yes
+Required, must be unique
+Contact Info
+Company contact details (phone/email/address)
+Text / Textarea
+Yes
+Valid phone/email format
+Vat
+
+
+Text
+
+
+
+
+Commission
+
+
+Text
+
+
+
+
+License No
+Business license number
+Text
+Yes
+Alphanumeric, must be unique
+Type
+company /Local market
+Dropdown
+
+
+
+
+Status
+Company status
+Dropdown
+Yes
+Active / Inactive
+
+List View :
+ID, 
+Company Id
+Name
+Address ,
+Phone,
+Type,
+Edit,Delete
+Business Rules:
+Inactive companies cannot be used in purchase
+
+
+3.2 Product Information
+Purpose: Define medicines and consumables
+Fields:
+Field Name
+Description
+Data Type
+Required
+Validation
+Product ID
+Unique product identifier
+Text / Auto
+Yes
+System generated, unique, read-only
+Product Name
+Name of the product
+Text
+Yes
+Required, must be unique
+Department
+
+
+Dropdown
+
+
+
+
+Product Group *
+
+
+
+
+
+
+
+
+Product Unit
+
+
+Dropdown
+
+
+
+
+Generic Name
+Generic/chemical name
+Text
+Yes
+Required
+Strength & Form
+Product strength and dosage form (e.g., 500mg Tablet)
+Text
+Yes
+Required
+Company
+Manufacturing company
+Dropdown / Text
+Yes
+Must select from active company list
+Batch Required
+Whether batch tracking is required
+Dropdown (Yes/No)
+Yes
+Default: Yes
+Expiry Required
+Whether expiry tracking is required
+Dropdown (Yes/No)
+Yes
+Default: Yes
+Unit Price (MRP / Purchase)
+Selling price (MRP) and purchase price
+Decimal (2 fields)
+Yes
+Must be positive numeric value
+Reminder Stock *
+
+
+
+
+
+
+
+
+Sale Price *
+
+
+
+
+
+
+
+
+
+
+List View : 
+Id
+Company Name
+Product Group
+Product Name
+Generic Name
+Unit
+Reminder Stock
+Sale Price
+Rack No
+UserName
+Edit
+Delete
+
+4. Stock Management
+4.1 Central Store Stock
+Responsibilities:
+Receive from supplier
+Maintain batch & expiry
+Distribute to outlets
+Functions:
+Medicine Receive (GRN)
+Medicine Return to Supplier
+Stock Adjustment
+Emergency Purchase Entry
+
+4.2 Outlet Pharmacy Stock
+Responsibilities:
+Maintain independent stock
+Issue medicines
+Request from central or other outlet
+Functions:
+Medicine Receive (from central / outlet)
+Medicine Transfer (to other outlet)
+Stock Adjustment
+Business Rule:
+Each outlet maintains its own ledger and closing balance
+
+
+5. Requisition & Transfer Flow
+5.1 Product Requisition to Central Store
+Outlet Pharmacy → Central Pharmacy
+Steps:
+Create Requisition
+Select Products & Qty
+Submit for approval
+5.2 Requisition Approval by Store
+Central Store Actions:
+Approve (Full / Partial)
+Reject (with reason)
+Upon approval:
+Stock deducted from Central
+Stock added to Outlet
+
+5.3 Inter‑Pharmacy Requisition
+Outlet A → Outlet B
+Rules:
+Only surplus stock allowed
+Approval is mandatory by the issuing pharmacy
+
+5.4 Central Pharmacy to Supplier Requisition (PO)
+
+5.4.1. Purpose
+The Central Pharmacy to Supplier Requisition (PO) module is designed to automate medicine procurement from suppliers based on consumption trends, current stock levels, and forecasted demand.
+This module helps:
+Maintain optimal inventory levels
+Prevent stock-out situations
+Reduce manual calculation errors
+Improve procurement planning using data-driven decisions
+
+5.4.2. Process Flow
+Central Pharmacy → Create Requisition → Approval → Generate PO → Supplier
+Step 1: Create Requisition
+The pharmacy user initiates a purchase requisition based on sales history and stock availability.
+
+5.4.3. Input Fields
+Field Name
+Type
+Description
+From Date
+Date
+Starting date for sales analysis
+To Date
+Date
+Ending date for sales analysis
+No of Days
+Number
+Forecast period (how many days stock is needed)
+Company
+Dropdown
+Select supplier/company
+
+
+
+5.4.4. Auto-Generated Input Table
+After selecting inputs, the system generates a medicine-wise table.
+Field
+Description
+Company Name
+Supplier/Manufacturer name
+Product Name
+Medicine/Product name
+Average Sale
+Average sale (based on the last 3 months' data)
+Current Stock
+Available stock quantity
+Request Quantity
+Auto-calculated
+Order Quantity
+Auto-calculated (Editable by user)
+
+
+5.4.5. Automated Calculation Logic
+System calculates Request Quantity automatically using:
+Step A — Calculate Average Sale
+The application takes the day count from the date range input fields
+Calculates the average sale.
+Average Sale = Total Sale Quantity / Day count
+
+Step B — Forecast Required Quantity
+Forecast Required Quantity = Average Daily Sale × No of Days (Taken as input from user)
+
+Step C — Request Quantity Calculation
+If Forecast Required Quantity > Current Stock
+Request Quantity = Forecast Required Quantity - Current Stock (View Only)
+Order Quantity = Request Quantity (Editable by requester)
+
+5.4.6. Example Scenario
+User Input
+From Date: 01 Jan 2026
+To Date: 31 Mar 2026
+No of Days: 30
+Company: Square Pharma Ltd.
+System Calculation
+Medicine
+Last 3 Months Sales
+Average Sale
+Current Stock
+Forecast Qty (30 days)
+Request Quantity
+Napa 500mg
+9000 pcs
+100 pcs/day
+2000 pcs
+3000 pcs
+1000 pcs
+Seclo 20mg
+4500 pcs
+50 pcs/day
+2000 pcs
+1500 pcs
+0 pcs
+Cef-3
+600 pcs
+6.67 pcs/day
+50 pcs
+200 pcs
+150 pcs
+
+Explanation
+Napa: 3000 pcs required for the next 30 days, current stock 2000 → Request Qty 1000 pcs
+Seclo: Stock sufficient → No request needed. Also not visible in the UI list.
+Cef-3: Shortage → 200 pcs required for the next 30 days, current stock 50 pcs → Request Qty 150 pcs
+
+5.4.7. User Editable Control
+The user can manually adjust Order Quantity if required.
+The application should log modification history for audit purposes.
+
+
+5.4.8. Step 2: Submit for Approval
+After verification:
+User clicks Submit for Approval
+System workflow:
+Draft → Submitted → Store/Management Approval → Purchase Order Generation
+
+5.4.9. Requisition Approval before PO
+Central Store Actions:
+Approve (Full / Partial)
+Reject (with reason)
+Upon approval:
+Generate PO
+Save the generated PO in the Pharmacy Module
+A “Send to Supplier” button will be there during PO generation that will send the PO to the supplier directly over email.
+
+6. Sales Management
+6.1 Medicine Sales (Outdoor)
+Cash / Credit
+Linked with the Invoice module
+6.2 Medicine Sales (Indoor)
+Linked with IPD billing
+Cumulative posting
+6.3 Sales Return
+Return against the original sale
+Stock re‑added
+Amount adjusted
+
+7. Department‑Wise Medicine Issue
+Purpose: Issue medicines directly to hospital departments
+Features:
+Department selection
+Issue quantity
+Cost center tagging
+
+8. Return Management
+8.1 Company Return
+Return expired/damaged medicine to supplier
+8.2 Medicine Return Approved
+Supervisor approval required
+
+9. Stock Adjustment
+Scenarios:
+Expiry
+Damage
+Physical stock mismatch
+Rules:
+Reason mandatory
+Approval required
+
+10. Due Collection
+Track customer dues
+Partial payments
+Aging report
+
+11. Reporting
+Pharmacy Reports
+
+12. User & Role Configuration
+12.1 Pharmacy User Config
+Roles:
+Central Store Admin
+Outlet Pharmacist
+Approver
+Auditor
+Permissions:
+Issue
+Approve
+Adjust
+View Reports
+
+13. Business Rules Summary
+Central Store is the primary receiving point
+Outlet pharmacies maintain independent stock
+All transfers require approval
+Negative stock not allowed
+Expired medicine blocked from sale
+
+14. Audit & Logs
+Every stock movement logged
+User, date, time tracked
+Immutable transaction history
+
+15. Integration Notes
+Integrated with:
+Billing & Invoice Module
+IPD Module
+Accounts & GL Posting
+
+16. Future Enhancements
+Barcode scanning
+Mobile requisition approval
+Auto‑reorder level
+
+What this document covers (end-to-end)
+Central Store receiving from suppliers
+Distribution to multiple outlet pharmacies
+Inter-pharmacy requisition & approval
+Individual stock per pharmacy
+OPD & IPD medicine sales
+Sales return, company return, stock adjustment
+Department-wise issue
+Emergency purchase entry
+User/role configuration & audit logging
+Accounting & billing integration
+

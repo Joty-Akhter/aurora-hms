@@ -1,0 +1,105 @@
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+  }
+
+  environment {
+    PROJECT_NAME = 'aurora-hms'
+    APP_DIR = 'easyops-erp'
+    FRONTEND_DIR = 'easyops-erp/frontend'
+  }
+
+  triggers {
+    githubPush()
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+        echo "Building project: ${PROJECT_NAME}"
+      }
+    }
+
+    stage('Validate Project Layout') {
+      steps {
+        sh 'test -f easyops-erp/pom.xml'
+        sh 'test -f easyops-erp/frontend/package.json'
+      }
+    }
+
+    stage('Backend Build') {
+      steps {
+        dir("${APP_DIR}") {
+          sh './mvnw -B clean install -DskipTests'
+        }
+      }
+    }
+
+    stage('Backend Test') {
+      steps {
+        dir("${APP_DIR}") {
+          sh './mvnw -B test'
+        }
+      }
+    }
+
+    stage('Frontend Build') {
+      steps {
+        dir("${FRONTEND_DIR}") {
+          sh 'npm ci'
+          sh 'npm run lint'
+          sh 'npm run type-check'
+          sh 'npm run build'
+        }
+      }
+    }
+
+    stage('Build Docker Images') {
+      when {
+        anyOf {
+          branch 'main'
+          branch 'master'
+        }
+      }
+      steps {
+        dir("${APP_DIR}") {
+          sh 'docker compose build'
+        }
+      }
+    }
+
+    stage('Deploy Project (Main Only)') {
+      when {
+        allOf {
+          anyOf {
+            branch 'main'
+            branch 'master'
+          }
+          expression { return env.DEPLOY_ENABLED == 'true' }
+        }
+      }
+      steps {
+        dir("${APP_DIR}") {
+          sh 'docker compose pull || true'
+          sh 'docker compose up -d'
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+    success {
+      echo 'Pipeline completed successfully.'
+    }
+    failure {
+      echo 'Pipeline failed. Check stage logs.'
+    }
+  }
+}

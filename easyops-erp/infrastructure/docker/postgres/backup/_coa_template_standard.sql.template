@@ -1,0 +1,159 @@
+-- ============================================================
+-- STANDARD CHART OF ACCOUNTS TEMPLATE
+-- For general business enterprises
+-- ============================================================
+
+-- This file provides a standard CoA template that can be imported
+-- Usage: Can be loaded into the system via CoA import functionality
+
+-- Note: These are template accounts. When imported, they will be:
+-- 1. Assigned to the specific organization
+-- 2. Given unique UUIDs
+-- 3. Assigned creation metadata
+
+-- ==================================================
+-- 1000-1999: ASSETS
+-- ==================================================
+
+-- 1000-1099: Cash and Bank Accounts
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '1000', 'Cash and Bank Accounts', 'ASSET', 'Current Assets', 1, true, 'Group for all cash and bank accounts'),
+(NULL, '1010', 'Cash on Hand', 'ASSET', 'Current Assets', 2, false, 'Physical cash'),
+(NULL, '1020', 'Petty Cash', 'ASSET', 'Current Assets', 2, false, 'Petty cash fund'),
+(NULL, '1030', 'Bank - Operating Account', 'ASSET', 'Current Assets', 2, false, 'Main operating bank account'),
+(NULL, '1040', 'Bank - Savings Account', 'ASSET', 'Current Assets', 2, false, 'Savings account'),
+(NULL, '1050', 'Bank - Foreign Currency', 'ASSET', 'Current Assets', 2, false, 'Foreign currency bank account');
+
+-- 1100-1199: Accounts Receivable
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '1100', 'Accounts Receivable', 'ASSET', 'Current Assets', 1, true, 'Group for receivables'),
+(NULL, '1110', 'Trade Receivables', 'ASSET', 'Current Assets', 2, false, 'Receivables from customers'),
+(NULL, '1120', 'Other Receivables', 'ASSET', 'Current Assets', 2, false, 'Other receivables'),
+(NULL, '1130', 'Allowance for Doubtful Accounts', 'ASSET', 'Current Assets', 2, false, 'Bad debt provision');
+
+-- 1200-1299: Inventory
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '1200', 'Inventory', 'ASSET', 'Current Assets', 1, true, 'Group for inventory'),
+(NULL, '1210', 'Raw Materials', 'ASSET', 'Current Assets', 2, false, 'Raw material inventory'),
+(NULL, '1220', 'Work in Progress', 'ASSET', 'Current Assets', 2, false, 'WIP inventory'),
+(NULL, '1230', 'Finished Goods', 'ASSET', 'Current Assets', 2, false, 'Finished goods inventory'),
+(NULL, '1240', 'Goods in Transit', 'ASSET', 'Current Assets', 2, false, 'Inventory in transit');
+
+-- 1300-1399: Prepaid and other current assets
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '1300', 'Prepaid Expenses', 'ASSET', 'Current Assets', 1, true, 'Group for prepaid expenses'),
+(NULL, '1310', 'Prepaid Insurance', 'ASSET', 'Current Assets', 2, false, 'Insurance paid in advance'),
+(NULL, '1320', 'Prepaid Rent', 'ASSET', 'Current Assets', 2, false, 'Rent paid in advance');
+
+-- 1500-1599: Fixed Assets
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '1500', 'Fixed Assets', 'ASSET', 'Non-Current Assets', 1, true, 'Group for fixed assets'),
+(NULL, '1510', 'Land', 'ASSET', 'Non-Current Assets', 2, false, 'Land and property'),
+(NULL, '1520', 'Buildings', 'ASSET', 'Non-Current Assets', 2, false, 'Buildings and structures'),
+(NULL, '1530', 'Machinery and Equipment', 'ASSET', 'Non-Current Assets', 2, false, 'Machinery and equipment'),
+(NULL, '1540', 'Furniture and Fixtures', 'ASSET', 'Non-Current Assets', 2, false, 'Furniture and fixtures'),
+(NULL, '1550', 'Vehicles', 'ASSET', 'Non-Current Assets', 2, false, 'Company vehicles'),
+(NULL, '1560', 'Computer Equipment', 'ASSET', 'Non-Current Assets', 2, false, 'IT equipment'),
+(NULL, '1570', 'Accumulated Depreciation', 'ASSET', 'Non-Current Assets', 2, false, 'Accumulated depreciation on fixed assets');
+
+-- ==================================================
+-- 2000-2999: LIABILITIES
+-- ==================================================
+
+-- 2000-2099: Current Liabilities
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '2000', 'Current Liabilities', 'LIABILITY', 'Current Liabilities', 1, true, 'Group for current liabilities'),
+(NULL, '2010', 'Accounts Payable', 'LIABILITY', 'Current Liabilities', 2, false, 'Trade payables'),
+(NULL, '2020', 'Accrued Expenses', 'LIABILITY', 'Current Liabilities', 2, false, 'Accrued liabilities'),
+(NULL, '2030', 'Sales Tax Payable', 'LIABILITY', 'Current Liabilities', 2, false, 'VAT/GST payable'),
+(NULL, '2040', 'Income Tax Payable', 'LIABILITY', 'Current Liabilities', 2, false, 'Income tax payable'),
+(NULL, '2050', 'Payroll Liabilities', 'LIABILITY', 'Current Liabilities', 2, false, 'Salary and wage liabilities'),
+(NULL, '2060', 'Short-term Loans', 'LIABILITY', 'Current Liabilities', 2, false, 'Short-term borrowings');
+
+-- 2500-2599: Long-term Liabilities
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '2500', 'Long-term Liabilities', 'LIABILITY', 'Non-Current Liabilities', 1, true, 'Group for long-term liabilities'),
+(NULL, '2510', 'Long-term Loans', 'LIABILITY', 'Non-Current Liabilities', 2, false, 'Long-term borrowings'),
+(NULL, '2520', 'Bonds Payable', 'LIABILITY', 'Non-Current Liabilities', 2, false, 'Bonds and debentures'),
+(NULL, '2530', 'Deferred Tax Liability', 'LIABILITY', 'Non-Current Liabilities', 2, false, 'Deferred tax');
+
+-- ==================================================
+-- 3000-3999: EQUITY
+-- ==================================================
+
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '3000', 'Equity', 'EQUITY', 'Equity', 1, true, 'Group for equity accounts'),
+(NULL, '3010', 'Share Capital', 'EQUITY', 'Equity', 2, false, 'Issued share capital'),
+(NULL, '3020', 'Retained Earnings', 'EQUITY', 'Equity', 2, false, 'Accumulated profits'),
+(NULL, '3030', 'Current Year Profit/Loss', 'EQUITY', 'Equity', 2, false, 'Current year P&L'),
+(NULL, '3040', 'Reserves', 'EQUITY', 'Equity', 2, false, 'Reserves and surplus');
+
+-- ==================================================
+-- 4000-4999: REVENUE
+-- ==================================================
+
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '4000', 'Revenue', 'REVENUE', 'Operating Revenue', 1, true, 'Group for revenue accounts'),
+(NULL, '4010', 'Sales Revenue', 'REVENUE', 'Operating Revenue', 2, false, 'Revenue from sales'),
+(NULL, '4020', 'Service Revenue', 'REVENUE', 'Operating Revenue', 2, false, 'Revenue from services'),
+(NULL, '4030', 'Interest Income', 'REVENUE', 'Non-Operating Revenue', 2, false, 'Interest earned'),
+(NULL, '4040', 'Other Income', 'REVENUE', 'Non-Operating Revenue', 2, false, 'Miscellaneous income'),
+(NULL, '4050', 'Sales Returns and Allowances', 'REVENUE', 'Operating Revenue', 2, false, 'Sales returns (contra-revenue)');
+
+-- ==================================================
+-- 5000-5999: COST OF GOODS SOLD
+-- ==================================================
+
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '5000', 'Cost of Goods Sold', 'EXPENSE', 'Direct Costs', 1, true, 'Group for COGS'),
+(NULL, '5010', 'Cost of Sales', 'EXPENSE', 'Direct Costs', 2, false, 'Direct cost of goods sold'),
+(NULL, '5020', 'Purchase Returns', 'EXPENSE', 'Direct Costs', 2, false, 'Purchase returns (contra-COGS)'),
+(NULL, '5030', 'Freight and Delivery', 'EXPENSE', 'Direct Costs', 2, false, 'Freight costs'),
+(NULL, '5040', 'Direct Labor', 'EXPENSE', 'Direct Costs', 2, false, 'Direct manufacturing labor');
+
+-- ==================================================
+-- 6000-6999: OPERATING EXPENSES
+-- ==================================================
+
+-- 6000-6099: Selling Expenses
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '6000', 'Selling Expenses', 'EXPENSE', 'Operating Expenses', 1, true, 'Group for selling expenses'),
+(NULL, '6010', 'Salaries - Sales', 'EXPENSE', 'Operating Expenses', 2, false, 'Sales team salaries'),
+(NULL, '6020', 'Commission Expense', 'EXPENSE', 'Operating Expenses', 2, false, 'Sales commissions'),
+(NULL, '6030', 'Advertising and Marketing', 'EXPENSE', 'Operating Expenses', 2, false, 'Marketing expenses'),
+(NULL, '6040', 'Travel - Sales', 'EXPENSE', 'Operating Expenses', 2, false, 'Sales travel expenses');
+
+-- 6100-6199: Administrative Expenses
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '6100', 'Administrative Expenses', 'EXPENSE', 'Operating Expenses', 1, true, 'Group for admin expenses'),
+(NULL, '6110', 'Salaries - Admin', 'EXPENSE', 'Operating Expenses', 2, false, 'Administrative salaries'),
+(NULL, '6120', 'Rent Expense', 'EXPENSE', 'Operating Expenses', 2, false, 'Office rent'),
+(NULL, '6130', 'Utilities', 'EXPENSE', 'Operating Expenses', 2, false, 'Electricity, water, etc.'),
+(NULL, '6140', 'Office Supplies', 'EXPENSE', 'Operating Expenses', 2, false, 'Office supplies and stationery'),
+(NULL, '6150', 'Insurance', 'EXPENSE', 'Operating Expenses', 2, false, 'Insurance premiums'),
+(NULL, '6160', 'Depreciation Expense', 'EXPENSE', 'Operating Expenses', 2, false, 'Depreciation charge'),
+(NULL, '6170', 'Professional Fees', 'EXPENSE', 'Operating Expenses', 2, false, 'Legal, audit, consulting fees'),
+(NULL, '6180', 'Repairs and Maintenance', 'EXPENSE', 'Operating Expenses', 2, false, 'Repair and maintenance costs'),
+(NULL, '6190', 'IT and Software', 'EXPENSE', 'Operating Expenses', 2, false, 'IT expenses and software licenses');
+
+-- ==================================================
+-- 7000-7999: OTHER EXPENSES
+-- ==================================================
+
+INSERT INTO accounting.chart_of_accounts (organization_id, account_code, account_name, account_type, account_category, level, is_group, description) VALUES
+(NULL, '7000', 'Other Expenses', 'EXPENSE', 'Non-Operating Expenses', 1, true, 'Group for other expenses'),
+(NULL, '7010', 'Interest Expense', 'EXPENSE', 'Non-Operating Expenses', 2, false, 'Interest on loans'),
+(NULL, '7020', 'Bank Charges', 'EXPENSE', 'Non-Operating Expenses', 2, false, 'Bank fees and charges'),
+(NULL, '7030', 'Foreign Exchange Loss', 'EXPENSE', 'Non-Operating Expenses', 2, false, 'FX losses'),
+(NULL, '7040', 'Bad Debt Expense', 'EXPENSE', 'Non-Operating Expenses', 2, false, 'Bad debt write-offs'),
+(NULL, '7050', 'Miscellaneous Expenses', 'EXPENSE', 'Non-Operating Expenses', 2, false, 'Other miscellaneous expenses');
+
+-- Note: This template uses organization_id = NULL to indicate template data
+-- When importing into an organization, the import service will:
+-- 1. Set the correct organization_id
+-- 2. Generate new UUIDs
+-- 3. Set creation timestamps and created_by
+-- 4. Mark as is_system_account = false (user can modify)
+
+-- Total accounts in template: 63 accounts
+

@@ -1,0 +1,221 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: auth-service
+  profiles:
+    active: dev
+  mvc:
+    dispatch-options-request: false
+  web:
+    cors:
+      allowed-origin-patterns: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 60000
+    jedis:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:false}
+
+# JWT Configuration
+jwt:
+  secret: easyops-jwt-secret-key-change-this-in-production-minimum-256-bits
+  expiration: 86400000 # 24 hours in milliseconds
+  refresh-expiration: 604800000 # 7 days in milliseconds
+
+# Session Configuration
+session:
+  timeout: 3600 # 1 hour in seconds
+  max-concurrent: 5 # Maximum concurrent sessions per user
+
+# Downstream Service Configuration
+services:
+  rbac:
+    base-url: http://rbac-service
+  communication:
+    base-url: http://communication-service
+  communication-internal-key: ${COMMUNICATION_INTERNAL_SERVICE_KEY:easyops-internal-communication-key}
+
+easyops:
+  app-name: EasyOps
+
+# Password Configuration
+password:
+  reset:
+    token-expiration: 3600 # 1 hour in seconds (legacy long-lived tokens)
+    otp-expiration-seconds: 600 # OTP validity for forgot-password flow
+    # When false (default), initiating reset fails fast if communication-service URL/key are unset (prod-safe).
+    # Integration tests set true so OTP can be asserted without a running communication-service.
+    allow-notification-skip: ${PASSWORD_RESET_ALLOW_NOTIFICATION_SKIP:false}
+  policy:
+    min-length: 8
+    require-uppercase: true
+    require-lowercase: true
+    require-digit: true
+    require-special: true
+
+# Account Configuration
+account:
+  verification:
+    token-expiration: 86400 # 24 hours in seconds
+  lockout:
+    max-attempts: 5
+    duration: 900 # 15 minutes in seconds
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    com.easyops.auth: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.cors: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+  redis:
+    host: localhost
+    port: 6379
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    com.easyops.auth: DEBUG
+    org.springframework.web.cors: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Dev hosts often omit communication-service; OTP still persists (see tests). Override via env for full-stack dev.
+password:
+  reset:
+    allow-notification-skip: true
+
+---
+# Local Profile (for running locally with Docker infrastructure)
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+  redis:
+    host: localhost
+    port: 6379
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Local workstations often run auth without communication-service; mirrors test profile behavior.
+password:
+  reset:
+    allow-notification-skip: true
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: WARN
+    com.easyops: INFO
+  file:
+    name: logs/auth-service.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+

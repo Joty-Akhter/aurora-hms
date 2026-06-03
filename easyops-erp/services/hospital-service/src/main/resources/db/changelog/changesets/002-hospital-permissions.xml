@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 
+        Hospital/EHR Module Permissions
+        This changeset includes hospital permissions for RBAC
+    -->
+    <changeSet id="002-hospital-permissions" author="hospital-service">
+        <comment>Hospital/EHR module permissions for Permission Management and role assignment</comment>
+        <sqlFile path="002-hospital-permissions.sql" 
+                 relativeToChangelogFile="true"
+                 splitStatements="true" 
+                 stripComments="false"/>
+    </changeSet>
+
+</databaseChangeLog>

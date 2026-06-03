@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for testing
+  postgres:
+    image: postgres:17
+    container_name: easyops-postgres-test
+    environment:
+      POSTGRES_DB: easyops
+      POSTGRES_USER: easyops
+      POSTGRES_PASSWORD: easyops123
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - easyops-test-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U easyops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Adminer for database management
+  adminer:
+    image: adminer
+    container_name: easyops-adminer-test
+    ports:
+      - "8081:8080"  # Different port to avoid conflicts
+    networks:
+      - easyops-test-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Liquibase for database migrations
+  liquibase:
+    image: liquibase/liquibase:4.20
+    container_name: easyops-liquibase-test
+    volumes:
+      - ./changelog:/liquibase/changelog
+      - ./liquibase.properties:/liquibase/liquibase.properties
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/easyops
+      LIQUIBASE_COMMAND_USERNAME: easyops_dev
+      LIQUIBASE_COMMAND_PASSWORD: easyops123
+    command: --defaultsFile=/liquibase/liquibase.properties update
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-test-network
+
+  # pgAdmin for advanced database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: easyops-pgadmin-test
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@easyops.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"  # pgAdmin web interface
+    volumes:
+      - pgadmin_test_data:/var/lib/pgadmin
+    networks:
+      - easyops-test-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_test_data:
+  pgadmin_test_data:
+
+networks:
+  easyops-test-network:
+    driver: bridge

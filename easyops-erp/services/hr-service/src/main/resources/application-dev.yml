@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:5432/${POSTGRES_DB:easyops}
+  jpa:
+    show-sql: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://eureka:8761/eureka/}
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    org.springframework.web: DEBUG
+

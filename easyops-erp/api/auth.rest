@@ -1,0 +1,220 @@
+### EasyOps ERP - Authentication API Tests
+### VS Code REST Client Extension Required
+### Base URLs
+
+@baseUrl = http://localhost:8081
+@authServiceUrl = http://localhost:8083
+@apiUrl = {{baseUrl}}/api/auth
+
+### Variables (will be set after login)
+@accessToken = 
+@refreshToken = 
+@userId = 
+
+################################################################################
+# 1. Health Check
+################################################################################
+
+### Check API Gateway Health (Actuator)
+GET {{baseUrl}}/actuator/health
+Content-Type: application/json
+
+### Check Auth Service Health (via API Gateway)
+GET {{apiUrl}}/health
+Content-Type: application/json
+
+### Check Auth Service Health (Direct)
+GET {{authServiceUrl}}/api/auth/health
+Content-Type: application/json
+
+################################################################################
+# 2. User Login
+################################################################################
+
+### Login with Admin User
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "password": "Admin123!"
+}
+
+### Login with Email
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin@easyops.com",
+  "password": "Admin123!"
+}
+
+### Login with Invalid Credentials (should fail)
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpassword"    
+}
+
+################################################################################
+# 3. Token Validation
+################################################################################
+
+### Validate Token (Replace with actual token from login response)
+GET {{apiUrl}}/validate
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+################################################################################
+# 4. Refresh Token
+################################################################################
+
+### Refresh Access Token
+POST {{apiUrl}}/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "YOUR_REFRESH_TOKEN_HERE"
+}
+
+################################################################################
+# 5. Change Password
+################################################################################
+
+### Change Password (requires authentication)
+POST {{apiUrl}}/password/change/USER_ID_HERE
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+{
+  "newPassword": "NewPassword123!"
+}
+
+################################################################################
+# 6. Password Reset Flow (OTP via EMAIL or SMS → communication-service)
+################################################################################
+
+### Recovery options (masked channels)
+POST {{apiUrl}}/password/reset/options
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin"
+}
+
+### Send OTP — EMAIL (legacy: body may be `{ \"email\": \"...\" }` only)
+POST {{apiUrl}}/password/reset
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "channel": "EMAIL"
+}
+
+### Send OTP — SMS
+POST {{apiUrl}}/password/reset
+Content-Type: application/json
+
+{
+  "usernameOrEmail": "admin",
+  "channel": "SMS"
+}
+
+### Confirm Password Reset (token field = 6-digit OTP or legacy UUID token)
+POST {{apiUrl}}/password/reset/confirm
+Content-Type: application/json
+
+{
+  "token": "123456",
+  "newPassword": "NewPassword123!"
+}
+
+################################################################################
+# 7. Logout
+################################################################################
+
+### Logout (invalidate token)
+POST {{apiUrl}}/logout
+Content-Type: application/json
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+################################################################################
+# COMPLETE LOGIN FLOW EXAMPLE
+################################################################################
+
+### Step 1: Login and get tokens
+# @name login
+POST {{apiUrl}}/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "Admin123!"
+}
+
+### Step 2: Use the access token from login response
+# Extract token automatically (works if login was successful)
+@token = {{login.response.body.$.accessToken}}
+
+### Step 3: Validate the token
+GET {{apiUrl}}/validate
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Step 4: Test authenticated endpoint (example with user service)
+GET {{baseUrl}}/api/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+### Step 5: Logout
+POST {{apiUrl}}/logout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+################################################################################
+# TESTING NOTES
+################################################################################
+
+### Prerequisites:
+# 1. Install "REST Client" extension in VS Code
+# 2. Ensure Docker containers are running: docker-compose ps
+# 3. Wait for services to be healthy (2-3 minutes after start)
+#
+### Usage:
+# - Click "Send Request" above any ### line
+# - Variables can be set manually or extracted from responses
+# - Response will appear in a split pane
+#
+### Expected Responses:
+# - Login Success: 200 OK with accessToken and refreshToken
+# - Login Fail: 400/401 with error message
+# - Token Validation: 200 OK with {"valid": true}
+#
+### Common Issues:
+# - 502 Bad Gateway: API Gateway not ready yet (wait 1-2 minutes)
+# - Connection refused: Services not started (run: docker-compose up -d)
+# - 401 Unauthorized: Token expired or invalid OR API Gateway needs rebuild
+# - 403 CSRF Error: API Gateway needs SecurityConfig with CSRF disabled
+#
+### If you get 401 on public endpoints (login, health):
+# The API Gateway container has old code. Rebuild it:
+# 1. Run: .\rebuild-gateway.ps1 (PowerShell)
+# 2. Or: rebuild-gateway.bat (Command Prompt)
+# 3. Or manually: docker stop easyops-api-gateway && docker rm easyops-api-gateway && docker-compose up -d --build api-gateway
+#
+### Default Test User:
+# Username: admin
+# Password: Admin123!
+# Email: admin@easyops.com
+#
+### Service Ports:
+# Frontend: http://localhost:3000
+# API Gateway: http://localhost:8081
+# Auth Service (Direct): http://localhost:8083
+# Eureka: http://localhost:8761
+# Adminer: http://localhost:8080
+#
+################################################################################
+

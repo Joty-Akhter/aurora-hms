@@ -1,0 +1,113 @@
+<svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Primary brand gradient -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="50%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    
+    <!-- Accent gradient -->
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    
+    <!-- Radial glow -->
+    <radialGradient id="glow" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0891b2" stop-opacity="0"/>
+    </radialGradient>
+    
+    <!-- Shadow filter for depth -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background glow -->
+  <circle cx="70" cy="70" r="65" fill="url(#glow)"/>
+  
+  <!-- Main composition: Abstract interconnected modules -->
+  <g transform="translate(70,70)">
+    
+    <!-- Central hub (core system) -->
+    <circle cx="0" cy="0" r="18" fill="url(#primaryGrad)" filter="url(#shadow)"/>
+    <circle cx="0" cy="0" r="14" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+    
+    <!-- Orbiting modules (connected systems) - positioned dynamically -->
+    <!-- Top module -->
+    <g transform="translate(0,-42)">
+      <rect x="-12" y="-8" width="24" height="16" rx="4" fill="url(#accentGrad)" transform="rotate(0)" filter="url(#shadow)"/>
+      <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.9)"/>
+    </g>
+    
+    <!-- Right module -->
+    <g transform="translate(42,0)">
+      <rect x="-12" y="-8" width="24" height="16" rx="4" fill="url(#primaryGrad)" transform="rotate(90)" filter="url(#shadow)"/>
+      <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.9)"/>
+    </g>
+    
+    <!-- Bottom-right module -->
+    <g transform="translate(30,30)">
+      <rect x="-10" y="-7" width="20" height="14" rx="3.5" fill="url(#accentGrad)" transform="rotate(45)" filter="url(#shadow)"/>
+      <circle cx="0" cy="0" r="2.5" fill="rgba(255,255,255,0.9)"/>
+    </g>
+    
+    <!-- Bottom-left module -->
+    <g transform="translate(-30,30)">
+      <rect x="-10" y="-7" width="20" height="14" rx="3.5" fill="url(#primaryGrad)" transform="rotate(-45)" filter="url(#shadow)"/>
+      <circle cx="0" cy="0" r="2.5" fill="rgba(255,255,255,0.9)"/>
+    </g>
+    
+    <!-- Left module -->
+    <g transform="translate(-42,0)">
+      <rect x="-12" y="-8" width="24" height="16" rx="4" fill="url(#accentGrad)" transform="rotate(-90)" filter="url(#shadow)"/>
+      <circle cx="0" cy="0" r="3" fill="rgba(255,255,255,0.9)"/>
+    </g>
+    
+    <!-- Connecting flow lines (data/process flow) -->
+    <!-- Top connection -->
+    <path d="M 0 -18 L 0 -34" stroke="url(#primaryGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M 0 -34 Q -8 -38 -12 -42" stroke="url(#primaryGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    
+    <!-- Right connection -->
+    <path d="M 18 0 L 30 0" stroke="url(#primaryGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M 30 0 Q 36 -4 42 -8" stroke="url(#primaryGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    
+    <!-- Bottom-right connection -->
+    <path d="M 12.7 12.7 L 21.2 21.2" stroke="url(#accentGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    
+    <!-- Bottom-left connection -->
+    <path d="M -12.7 12.7 L -21.2 21.2" stroke="url(#accentGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    
+    <!-- Left connection -->
+    <path d="M -18 0 L -30 0" stroke="url(#primaryGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <path d="M -30 0 Q -36 4 -42 8" stroke="url(#primaryGrad)" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    
+    <!-- Dynamic flow arcs (suggesting continuous operations) -->
+    <path d="M -15 -15 A 25 25 0 0 1 15 -15" 
+          stroke="url(#accentGrad)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.4"
+          stroke-dasharray="4 3"/>
+    
+    <path d="M 15 15 A 25 25 0 0 1 -15 15" 
+          stroke="url(#accentGrad)" 
+          stroke-width="1.5" 
+          fill="none" 
+          stroke-linecap="round" 
+          opacity="0.4"
+          stroke-dasharray="4 3"/>
+  </g>
+</svg>

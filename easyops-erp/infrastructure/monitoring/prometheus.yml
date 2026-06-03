@@ -1,0 +1,122 @@
+# Prometheus Configuration for EasyOps ERP
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'easyops-dev'
+    environment: 'development'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Eureka Service Discovery
+  - job_name: 'eureka'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['eureka:8761']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'eureka'
+
+  # API Gateway
+  - job_name: 'api-gateway'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['api-gateway:8081']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'api-gateway'
+
+  # User Management Service
+  - job_name: 'user-management'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['user-management:8082']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'user-management'
+
+  # Auth Service
+  - job_name: 'auth-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['auth-service:8083']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'auth-service'
+
+  # RBAC Service
+  - job_name: 'rbac-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['rbac-service:8084']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'rbac-service'
+
+  # Organization Service
+  - job_name: 'organization-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['organization-service:8085']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'organization-service'
+
+  # Notification Service
+  - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['notification-service:8086']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'notification-service'
+
+  # Monitoring Service
+  - job_name: 'monitoring-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['monitoring-service:8087']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'monitoring-service'
+
+  # Accounting Service (Phase 1.1)
+  - job_name: 'accounting-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['accounting-service:8088']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'accounting-service'
+
+  # PostgreSQL Exporter (optional - requires separate exporter)
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']
+
+  # Redis Exporter (optional - requires separate exporter)
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
+

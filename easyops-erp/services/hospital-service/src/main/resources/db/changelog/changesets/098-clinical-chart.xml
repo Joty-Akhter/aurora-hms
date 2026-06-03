@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="hospital-service:098-clinical-chart-schema" author="easyops">
+        <comment>Create hospital.clinical_chart_items for legacy clinical tariff / charge master</comment>
+        <sqlFile path="098-clinical-chart-schema.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="false"
+                 endDelimiter=";"/>
+    </changeSet>
+
+    <changeSet id="hospital-service:098-clinical-chart-seed" author="easyops">
+        <comment>Seed clinical chart rows from legacy export (scripts/generate_clinical_chart_seed.py)</comment>
+        <sqlFile path="098-clinical-chart-seed-generated.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="false"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

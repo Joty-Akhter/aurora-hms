@@ -1,0 +1,80 @@
+package com.easyops.ar.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "ar_receipts", schema = "accounting")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ARReceipt {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    
+    @Column(name = "organization_id", nullable = false)
+    private UUID organizationId;
+    
+    @Column(name = "receipt_number", nullable = false, unique = true, length = 50)
+    private String receiptNumber;
+    
+    @Column(name = "receipt_date", nullable = false)
+    private LocalDate receiptDate;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+    
+    @Column(name = "payment_method", length = 50)
+    private String paymentMethod;
+    
+    @Column(name = "reference_number", length = 100)
+    private String referenceNumber;
+    
+    @Column(name = "amount", nullable = false, precision = 19, scale = 4)
+    private BigDecimal amount;
+    
+    @Column(name = "currency", length = 3)
+    private String currency = "USD";
+    
+    @Column(name = "bank_account_id")
+    private UUID bankAccountId;
+    
+    @Column(name = "gl_journal_id")
+    private UUID glJournalId;
+    
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
+    
+    @Column(name = "status", length = 20)
+    private String status = "DRAFT";
+    
+    @Column(name = "created_by")
+    private UUID createdBy;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ARReceiptAllocation> allocations = new ArrayList<>();
+    
+    // Helper method to add allocation
+    public void addAllocation(ARReceiptAllocation allocation) {
+        allocations.add(allocation);
+        allocation.setReceipt(this);
+    }
+}
+

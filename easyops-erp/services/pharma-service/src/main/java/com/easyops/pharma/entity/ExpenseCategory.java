@@ -1,0 +1,55 @@
+package com.easyops.pharma.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = "expense_categories", schema = "pharma")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class ExpenseCategory implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    
+    @Column(name = "organization_id", nullable = false)
+    private UUID organizationId;
+    
+    @Column(name = "name", nullable = false, length = 200)
+    private String name; // Sample Products, Gifts to Doctors, Promotional Materials, Other Expenses
+    
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+    
+    @Column(name = "is_active")
+    private Boolean isActive = true;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @Column(name = "created_by")
+    private UUID createdBy;
+    
+    @Column(name = "updated_by")
+    private UUID updatedBy;
+}
+

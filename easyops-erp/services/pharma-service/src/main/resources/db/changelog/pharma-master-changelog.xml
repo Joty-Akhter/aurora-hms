@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Pharma module schema for pharma-service -->
+    <include file="schema/055-pharma-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-3/304-alien-pharma-product-fields.sql" relativeToChangelogFile="true"/>
+    <include file="phase-3/306-fix-pharma-field-types.sql" relativeToChangelogFile="true"/>
+    <include file="schema/094-deposit-bank-account-id.sql" relativeToChangelogFile="true"/>
+    <include file="schema/095-pharma-territory-incentive-allocations.sql" relativeToChangelogFile="true"/>
+    <include file="data/095-pharma-territory-incentive-migration.sql" relativeToChangelogFile="true"/>
+    <include file="data/015-pharma-permissions.sql" relativeToChangelogFile="true"/>
+    <include file="data/090-alien-pharma-seed.sql" relativeToChangelogFile="true"/>
+    <include file="data/096-pharma-territory-incentive-rules-for-missing-territories.sql" relativeToChangelogFile="true"/>
+    <include file="data/091-pharma-salary-structure.sql" relativeToChangelogFile="true"/>
+    <include file="data/092-payroll-gl-accounts.sql" relativeToChangelogFile="true"/>
+    <include file="data/093-enable-pharma-modules.sql" relativeToChangelogFile="true"/>
+    <include file="data/097-bank-accounts-seed.sql" relativeToChangelogFile="true"/>
+    <include file="data/098-bank-accounts-cash.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>
+

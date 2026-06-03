@@ -1,0 +1,32 @@
+# Multi-stage build for HR Service
+
+# Stage 1: Build
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy parent POM and settings
+COPY pom.xml .
+COPY maven-settings.xml /root/.m2/settings.xml
+
+# Copy the entire project for multi-module build
+COPY . .
+
+# Build the specific module
+RUN mvn clean package -pl services/hr-service -am -DskipTests spring-boot:repackage
+
+# Stage 2: Runtime
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# Copy the built jar from build stage
+COPY --from=build /app/services/hr-service/target/hr-service-1.0.0.jar app.jar
+
+# Expose port
+EXPOSE 8096
+
+# Set active profile
+ENV SPRING_PROFILES_ACTIVE=dev
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
+

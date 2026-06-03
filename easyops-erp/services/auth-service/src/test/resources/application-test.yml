@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: auth-service-test
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          create_namespaces: true
+
+jwt:
+  secret: test-jwt-secret-key-for-testing-minimum-256-bits-required-here
+  expiration: 3600000
+  refresh-expiration: 7200000
+
+session:
+  timeout: 1800
+  max-concurrent: 3
+
+services:
+  communication:
+    base-url: ""
+  communication-internal-key: ""
+
+password:
+  reset:
+    token-expiration: 1800
+    otp-expiration-seconds: 600
+    allow-notification-skip: true
+  policy:
+    min-length: 8
+    require-uppercase: true
+    require-lowercase: true
+    require-digit: true
+    require-special: true
+
+account:
+  verification:
+    token-expiration: 3600
+  lockout:
+    max-attempts: 5
+    duration: 900
+
+logging:
+  level:
+    com.easyops: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+

@@ -1,0 +1,148 @@
+spring:
+  application:
+    name: communication-service
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+  liquibase:
+    enabled: ${COMMUNICATION_LIQUIBASE_ENABLED:false}
+    change-log: classpath:db/changelog/communication-master-changelog.xml
+    default-schema: communication
+    liquibase-schema: public
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/easyops}
+    username: ${SPRING_DATASOURCE_USERNAME:easyops}
+    password: ${SPRING_DATASOURCE_PASSWORD:easyops123}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: communication
+
+server:
+  port: 8099
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.easyops.communication: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] %msg%n"
+
+services:
+  rbac:
+    base-url: ${SERVICES_RBAC_BASE_URL:http://localhost:8084}
+
+communication:
+  internal:
+    service-key: ${COMMUNICATION_INTERNAL_SERVICE_KEY:easyops-internal-communication-key}
+  phase0:
+    broker: kafka
+    template-engine: mustache
+    adrs:
+      - ADR-001
+      - ADR-002
+      - ADR-003
+  events:
+    topic: communication-events
+    dlq-topic: communication-events-dlq
+  phase3:
+    kafka:
+      enabled: ${COMMUNICATION_PHASE3_KAFKA_ENABLED:true}
+      group-id: communication-service-phase3
+      appointment-topic: appointment-lifecycle-events
+      invoice-topic: invoice-lifecycle-events
+    worker:
+      enabled: ${COMMUNICATION_PHASE3_WORKER_ENABLED:true}
+      poll-interval-ms: ${COMMUNICATION_PHASE3_WORKER_POLL_MS:10000}
+    dlq:
+      publishing-enabled: ${COMMUNICATION_PHASE3_DLQ_PUBLISHING_ENABLED:true}
+    required-headers: eventType,eventVersion,correlationId,organizationId
+    required-fields: eventId,eventType,eventVersion,occurredAt,organizationId,entityId,actorId,correlationId,payload
+  phase6:
+    worker:
+      batch-size: ${COMMUNICATION_PHASE6_WORKER_BATCH_SIZE:50}
+    alerts:
+      backlog:
+        warn: ${COMMUNICATION_PHASE6_ALERT_BACKLOG_WARN:25}
+        critical: ${COMMUNICATION_PHASE6_ALERT_BACKLOG_CRITICAL:50}
+      failure-ratio:
+        warn: ${COMMUNICATION_PHASE6_ALERT_FAILURE_RATIO_WARN:0.20}
+        critical: ${COMMUNICATION_PHASE6_ALERT_FAILURE_RATIO_CRITICAL:0.40}
+  providers:
+    pondit:
+      # Appointment / transactional SMS (Pondit). Values here are used unless overridden by env
+      # (e.g. COMMUNICATION_PROVIDERS_PONDIT_API_KEY). Do not rely on start scripts for these.
+      stub: false
+      # Send: http://sms3.pondit.com:7788/sendtext?apikey=&secretkey=&callerID=&toUser=&messageContent=
+      base-url: http://sms3.pondit.com:7788
+      send-path: /sendtext
+      # Aurora Hospital — non-masking (appointment SMS). Client login: aurorahos / abcd1234
+      sender-id: "12345"
+      api-key: "969dd3e70642aeb5"
+      secret-key: "ad96c485"
+    smtp:
+      username: ${COMMUNICATION_SMTP_USERNAME:}
+      password: ${COMMUNICATION_SMTP_PASSWORD:}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+# Development: run Liquibase (schema + default templates) and consume appointment/invoice Kafka topics.
+spring:
+  config:
+    activate:
+      on-profile: dev
+  liquibase:
+    enabled: true
+
+communication:
+  phase3:
+    kafka:
+      enabled: true
+
+  ops:
+    bypass-rbac: true
+
+---
+# Local profile: same RBAC bypass as dev for hospital stack (profile=local).
+spring:
+  config:
+    activate:
+      on-profile: local
+  liquibase:
+    enabled: true
+
+communication:
+  phase3:
+    kafka:
+      enabled: true
+  ops:
+    bypass-rbac: true

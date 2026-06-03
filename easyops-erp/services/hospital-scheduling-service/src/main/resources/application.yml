@@ -1,0 +1,147 @@
+services:
+  rbac:
+    base-url: ${SERVICES_RBAC_BASE_URL:http://localhost:8084}
+
+hospital-scheduling:
+  waitlist:
+    # When true, after an appointment is cancelled the freed slot is offered to the waitlist (promote up to 1 candidate).
+    auto-fill-on-cancel: false
+  default-timezone: ${HOSPITAL_SCHEDULING_DEFAULT_TIMEZONE:Asia/Dhaka}
+
+# Used by SchedulingTimeZoneResolver (Java property hospital.scheduling.default-timezone).
+hospital:
+  scheduling:
+    default-timezone: ${HOSPITAL_SCHEDULING_DEFAULT_TIMEZONE:Asia/Dhaka}
+  integration:
+    patient-lookup:
+      # Waitlist promote: load primary phone / name from hospital-service for appointment SMS (disable if hospital is unreachable in this environment).
+      enabled: ${HOSPITAL_SCHEDULING_PATIENT_LOOKUP_ENABLED:true}
+      # Optional: service-account UUID sent as X-User-Id on Feign GET /api/patients/{id} (RBAC + identity card enrichment on hospital-service).
+      outbound-user-id: ${HOSPITAL_SCHEDULING_OUTBOUND_HOSPITAL_USER_ID:}
+
+comm:
+  # Phase 4 rollout flags:
+  # - false: keep legacy behavior only
+  # - true: publish appointment communication events for communication-service flow
+  appointment:
+    sms:
+      enabled: ${COMM_APPOINTMENT_SMS_ENABLED:true}
+      # Used in Kafka payload for template variables {{locationLine}} and {{mapsUrl}} (communication-service SMS body).
+      location-line: ${COMM_APPOINTMENT_SMS_LOCATION_LINE:601 in Aurora Specialized Hospital Ltd. Dhaka}
+      maps-url: ${COMM_APPOINTMENT_SMS_MAPS_URL:https://maps.app.goo.gl/rVnySGoJPEy9jKwTA}
+  kafka:
+    appointment-topic: ${COMM_KAFKA_APPOINTMENT_TOPIC:appointment-lifecycle-events}
+  default-organization-id: ${COMM_DEFAULT_ORGANIZATION_ID:00000000-0000-0000-0000-000000000000}
+
+spring:
+  application:
+    name: hospital-scheduling-service
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      adjust-dates-to-context-time-zone: false
+      fail-on-unknown-properties: false
+
+  liquibase:
+    enabled: false
+
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/easyops}
+    username: ${SPRING_DATASOURCE_USERNAME:easyops}
+    password: ${SPRING_DATASOURCE_PASSWORD:easyops123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: hospital_scheduling
+
+server:
+  port: 8093
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    com.easyops.hospitalscheduling: INFO
+    org.hibernate.SQL: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId:-}] %msg%n"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+---
+# Development profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: hospital_scheduling
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops.hospitalscheduling: DEBUG

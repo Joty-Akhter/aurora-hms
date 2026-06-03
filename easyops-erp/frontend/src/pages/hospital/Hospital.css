@@ -1,0 +1,1411 @@
+/* Hospital/EHR Module Styles - Modern Design */
+
+.hospital-page {
+  padding: 16px;
+  max-width: 1600px;
+  margin: 0 auto;
+  background: #f8fafc;
+  min-height: calc(100vh - 64px);
+}
+
+/* Page Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  padding: 24px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 16px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.page-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-header p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Buttons */
+.btn-primary {
+  background: white;
+  color: #059669;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+  background: #f0fdf4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #d1d5db;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.btn-link:hover {
+  color: #2563eb;
+}
+
+.btn-link.btn-danger {
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding-inline: 12px;
+  font-weight: 600;
+}
+
+.btn-link.btn-danger:hover {
+  background: #dc2626;
+  color: #ffffff;
+}
+
+/* Filters Section */
+.filters-section {
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 300px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.filter-select {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Table */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+/* Patient list: flex page so the table fills remaining viewport and H-scroll stays visible */
+.hospital-page.patient-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: calc(100vh - 64px - 48px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.patient-list-page .page-header,
+.patient-list-page .filters-section,
+.patient-list-page .error-message,
+.patient-list-page .table-footer {
+  flex-shrink: 0;
+}
+
+.patient-list-page .patient-list-table-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+  margin-bottom: 12px;
+}
+
+.patient-list-page .patient-list-table-scroll .data-table {
+  min-width: 900px;
+}
+
+.patient-list-page .patient-list-table-scroll .data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f9fafb;
+}
+
+/* Clinical note view: avoid clipping wide/long content beside the app shell */
+.clinical-note-view-modal .modal-body {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: min(72vh, calc(100vh - 140px));
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #111827;
+}
+
+.data-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Actions column: header and controls align right (matches View / Edit / … buttons) */
+.data-table th.col-actions,
+.data-table td.col-actions {
+  text-align: right;
+  vertical-align: middle;
+}
+
+.data-table td.col-actions .action-buttons {
+  justify-content: flex-end;
+}
+
+@media (max-width: 1366px) {
+  .prescription-list-table th:last-child,
+  .prescription-list-table td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    background: #fff;
+    box-shadow: -8px 0 12px -10px rgba(0, 0, 0, 0.35);
+    white-space: nowrap;
+  }
+
+  .prescription-list-table thead th:last-child {
+    z-index: 2;
+    background: #f9fafb;
+  }
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px !important;
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* EHR clinical values: keep human-readable labels (Active, Severe) from formatters */
+.hospital-page .status-badge.status-badge--clinical,
+.hospital-page .data-table tbody td .status-badge,
+.hospital-page .info-card .status-badge {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+}
+
+.status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-deceased {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-archived {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.action-buttons .btn-link {
+  white-space: nowrap;
+}
+
+/* Form Styles */
+.form-container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.form-container--vitals {
+  overflow-x: hidden;
+}
+
+.form-section {
+  margin-bottom: 18px;
+}
+
+.form-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Doctor form: checkbox + label on one row, tight gap */
+.hospital-page .form-group.form-group--inline-check {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.hospital-page .form-group.form-group--inline-check > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 500;
+  margin: 0;
+  cursor: pointer;
+}
+
+.hospital-page .form-group.form-group--inline-check input[type='checkbox'] {
+  width: auto;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.hospital-page .form-group.form-group--inline-check.full-width > label {
+  align-items: flex-start;
+}
+
+/* Age (years): hide native number steppers so the field reads as plain text entry */
+.input-age-plain[type='number']::-webkit-outer-spin-button,
+.input-age-plain[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-age-plain[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Patient age: number + Years/Months unit (same pattern as vitals measurements) */
+.form-group .age-inline {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.form-group .age-inline input[type='number'] {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.form-group .age-inline select.age-unit-select {
+  flex: 0 0 auto;
+  min-width: 5.75rem;
+  width: auto;
+  padding-left: 10px;
+  padding-right: 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.form-group .age-hint {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+/* Numeric value + unit: prioritize the number field; keep unit dropdown narrow (vitals form) */
+.form-container--vitals .form-group .measurement-inline {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.form-container--vitals .form-group .measurement-inline input[type="number"] {
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.form-container--vitals .form-group .measurement-inline select,
+.form-container--vitals .form-group .height-inline select,
+.form-container--vitals .form-group select.unit-select {
+  flex: 0 0 auto;
+  width: 4.25rem;
+  min-width: 4.25rem;
+  max-width: 4.25rem;
+  padding-left: 8px;
+  padding-right: 20px;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+
+.form-container--vitals .form-group .height-inline {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+}
+
+.form-container--vitals .form-group .height-inline input[type='number'] {
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
+  min-width: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.form-container--vitals .form-group .height-inline .height-unit-label {
+  flex: 0 0 auto;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Vitals record form: prevent unit rows overflowing narrow grid columns */
+.form-grid--vitals-measurements {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+}
+
+.form-grid--vitals-measurements .form-group {
+  min-width: 0;
+}
+
+.form-grid--vitals-measurements .form-group--height {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 480px) {
+  .form-container--vitals .form-group .measurement-inline select,
+  .form-container--vitals .form-group .height-inline select,
+  .form-container--vitals .form-group select.unit-select {
+    width: 3.75rem;
+    min-width: 3.75rem;
+    max-width: 3.75rem;
+    padding-left: 6px;
+    padding-right: 18px;
+    font-size: 12px;
+  }
+
+  .form-container--vitals .form-group .height-inline input[type='number'] {
+    flex: 0 0 2.75rem;
+    width: 2.75rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Error and Loading */
+.error-message {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #ef4444;
+}
+
+.success-message {
+  background: #dcfce7;
+  color: #166534;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border-left: 4px solid #22c55e;
+}
+
+.success-message--prominent {
+  font-weight: 600;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35), 0 4px 12px rgba(22, 163, 74, 0.15);
+}
+
+/* RBAC hints (Phase 4 — prescribing vs transmit) */
+.rbac-hint-message {
+  background: #fffbeb;
+  color: #92400e;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  border-left: 4px solid #f59e0b;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* Table Footer */
+.table-footer {
+  text-align: right;
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 12px;
+}
+
+/* Preferred Name */
+.preferred-name {
+  color: #6b7280;
+  font-size: 13px;
+  font-style: italic;
+}
+
+/* Tabs */
+.tabs-container {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  padding: 0 24px;
+}
+
+.tab {
+  padding: 16px 24px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #10b981;
+}
+
+.tab.active {
+  color: #10b981;
+  border-bottom-color: #10b981;
+}
+
+.tab-content {
+  padding: 14px;
+}
+
+/* Card Styles */
+.info-card {
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 16px;
+}
+
+.info-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.info-value {
+  color: #111827;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .info-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 10px 0;
+  }
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Reusable modal shell for hospital pages */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 14px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.modal-content {
+  width: min(920px, calc(100vw - 28px));
+  max-width: 100%;
+  max-height: min(92vh, calc(100vh - 36px));
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: auto;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.modal-close {
+  border: 1px solid #94a3b8;
+  background: #ffffff;
+  color: #0f172a;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.15);
+}
+
+.modal-close:hover {
+  background: #f1f5f9;
+}
+
+.modal-body {
+  padding: 16px;
+  overflow-x: hidden;
+}
+
+.modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+@media (max-height: 760px) {
+  .modal-overlay {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 1024px) {
+  .modal-overlay {
+    padding: 10px 8px 16px;
+  }
+
+  .modal-content {
+    width: min(100%, calc(100vw - 16px));
+    max-height: calc(100vh - 24px);
+  }
+
+  .modal-body {
+    padding: 12px;
+  }
+}
+
+/* Right column stack: medicines form + advice / follow-up */
+.ep-prescription-form-right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+/* ── EP prescribe layout: left 60% (clinical) | right 40% (Rx / Advice / Notes) ── */
+.ep-quick-mode,
+.form-container.ep-prescription-form {
+  display: grid;
+  grid-template-columns: minmax(0, 60%) minmax(0, 40%);
+  gap: 14px;
+  align-items: start;
+}
+
+.ep-quick-mode {
+  padding: 16px;
+  background: var(--bg-surface, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+/* Straight vertical separator between clinical (left) and Rx (right), desktop only */
+@media (min-width: 1101px) {
+  .ep-quick-mode > .ep-prescription-form-left,
+  .form-container.ep-prescription-form > .ep-prescription-form-left {
+    border-right: 2px solid #374151;
+    padding-right: 20px;
+    margin-right: 2px;
+  }
+}
+
+/* Tablet: stack — clinical column, then Rx + advice column */
+@media (max-width: 1100px) {
+  .ep-quick-mode,
+  .form-container.ep-prescription-form {
+    grid-template-columns: 1fr;
+  }
+  .ep-quick-mode > *,
+  .form-container.ep-prescription-form > * {
+    grid-column: 1 / -1;
+  }
+  .ep-quick-mode > .ep-prescription-form-left,
+  .form-container.ep-prescription-form > .ep-prescription-form-left {
+    border-right: none;
+    padding-right: 0;
+    margin-right: 0;
+  }
+}
+
+/* Small tablet / phone: single column */
+@media (max-width: 720px) {
+  .ep-quick-mode,
+  .form-container.ep-prescription-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* EP-3: hide Rx history chrome while in quick prescribe focus */
+.hospital-page.ep-prescribe-focus {
+  max-width: 100%;
+}
+
+/* EP-3: active quick prescribing — full-width tablet-friendly canvas */
+.hospital-page.ep-quick-mode-active {
+  max-width: 100%;
+}
+
+@media (min-width: 768px) and (max-width: 1200px) {
+  .hospital-page.ep-quick-mode-active .ep-quick-mode {
+    min-height: min(70vh, 900px);
+  }
+}
+
+/* Pharmacy dispensing workspace (cart + stock hints) */
+.pharmacy-dispense-workspace-card {
+  border-radius: 10px;
+  height: 100%;
+}
+
+.pharmacy-dispense-stock-ok {
+  color: #15803d;
+  font-weight: 600;
+}
+
+.pharmacy-dispense-stock-low {
+  color: #c2410c;
+  font-weight: 600;
+}
+
+.pharmacy-dispense-stock-out {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* Prescription page: make editable fields visually prominent */
+.hospital-page.prescription-page .form-section input:not([type="checkbox"]):not([type="radio"]),
+.hospital-page.prescription-page .form-section select,
+.hospital-page.prescription-page .form-section textarea {
+  border: 1.5px solid #94a3b8;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.12);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.hospital-page.prescription-page .form-section input:not([type="checkbox"]):not([type="radio"]):hover,
+.hospital-page.prescription-page .form-section select:hover,
+.hospital-page.prescription-page .form-section textarea:hover {
+  border-color: #64748b;
+  background: #f8fafc;
+}
+
+.hospital-page.prescription-page .form-section input:not([type="checkbox"]):not([type="radio"]):focus,
+.hospital-page.prescription-page .form-section select:focus,
+.hospital-page.prescription-page .form-section textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  background: #fff;
+}
+
+/* Prescription print/PDF preview overlay (matches hospital modal safe-area behavior) */
+.rx-print-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 20px 24px;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.rx-print-preview-panel {
+  background: #fff;
+  border-radius: 8px;
+  width: min(920px, calc(100vw - 40px));
+  max-height: min(90vh, calc(100vh - 48px));
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  margin: auto;
+  box-sizing: border-box;
+}
+
+@media (max-height: 760px) {
+  .rx-print-preview-overlay {
+    align-items: flex-start;
+  }
+}
+
+/*
+ * Live preview + html2pdf: mirrors buildRxPrintDocumentHtml (@page margin 5mm L/R → 200mm body).
+ * Letterhead is top padding on .rx-page only — content height follows body (avoids blank first PDF page).
+ */
+.rx-preview-scope.rx-preview-scope--a4 {
+  max-width: 200mm;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-page {
+  max-width: 148mm;
+  padding: 24.2mm 12px 14mm;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* A4: match PrescriptionManagement page insets (top 2.65in, bottom 1.5in). */
+.rx-preview-scope.rx-preview-scope--a4 .rx-page {
+  max-width: 100%;
+  width: 100%;
+  padding: 2.65in 5mm 1.5in 5mm;
+  min-height: 0;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.rx-preview-scope .rx-page {
+  margin: 0 auto;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.rx-preview-scope .rx-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-end;
+  border-bottom: 0;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.rx-preview-scope .rx-header-left h2 {
+  margin: 0 0 2px;
+  font-size: 20px;
+  color: #005f73;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-header-left h2 {
+  font-size: 14px;
+}
+
+.rx-preview-scope .rx-header-left p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.4;
+  font-size: 10px;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-header-left p {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-header-right {
+  text-align: right;
+}
+
+.rx-preview-scope .rx-header-right h3 {
+  margin: 0 0 2px;
+  font-size: 17px;
+  color: #1f2937;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-header-right h3 {
+  font-size: 13px;
+}
+
+.rx-preview-scope .rx-header-right p {
+  margin: 0;
+  color: #374151;
+  line-height: 1.35;
+  font-size: 10px;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-header-right p {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-demographics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: #e0fbfc;
+  border-radius: 6px;
+  padding: 8px 10px;
+  gap: 6px 8px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: #1f2937;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-demographics {
+  font-size: 10px;
+}
+
+.rx-preview-scope .rx-demographics-cell {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.rx-preview-scope .rx-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 60%) minmax(0, 40%);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.rx-preview-scope .rx-page.rx-page--signature .rx-main {
+  padding-bottom: 5.5rem;
+}
+
+@media print {
+  .rx-preview-scope .rx-page.rx-page--signature .rx-main {
+    padding-bottom: 5.5rem;
+  }
+
+  .rx-preview-scope.rx-preview-scope--compact .rx-page.rx-page--signature .rx-main {
+    padding-bottom: 4.5rem;
+  }
+}
+
+.rx-preview-scope .rx-page-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}
+
+.rx-preview-scope.rx-preview-scope--a4 .rx-main {
+  grid-template-columns: minmax(0, 60%) minmax(0, 40%);
+  gap: 4px;
+}
+
+.rx-preview-scope.rx-preview-scope--a4 .rx-sidebar {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rx-preview-scope .rx-sidebar {
+  align-self: start;
+  min-width: 0;
+  max-width: 100%;
+  border-right: 2px solid #374151;
+  padding-right: 4px;
+  padding-left: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rx-preview-scope .rx-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #000000;
+  text-transform: uppercase;
+  border-bottom: 1px solid #000000;
+  margin: 0 0 6px;
+  padding-bottom: 3px;
+  letter-spacing: 0.04em;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-section-title {
+  font-size: 11px;
+}
+
+.rx-preview-scope .rx-sidebar-item {
+  font-size: 10px;
+  color: #334155;
+  margin: 0 0 5px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-sidebar-item {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-sidebar-item.rx-clinical-value {
+  font-size: 12px;
+  color: #1e293b;
+  line-height: 1.45;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-sidebar-item.rx-clinical-value {
+  font-size: 10.5px;
+}
+
+.rx-preview-scope .rx-area {
+  align-self: stretch;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 0;
+  height: 100%;
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.rx-preview-scope .rx-symbol {
+  font-family: serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: #005f73;
+  margin: 0 0 10px;
+  line-height: 1;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-symbol {
+  font-size: 26px;
+}
+
+.rx-preview-scope .med-item {
+  margin: 0 0 14px;
+  page-break-inside: avoid;
+}
+
+.rx-preview-scope .med-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .med-name {
+  font-size: 11px;
+}
+
+.rx-preview-scope .med-dose {
+  font-size: 10.5px;
+  color: #475569;
+  margin: 4px 0 0;
+  line-height: 1.35;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .med-dose {
+  font-size: 9px;
+}
+
+.rx-preview-scope .advice-list {
+  margin: 6px 0 0;
+  padding-left: 16px;
+  font-size: 10.5px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .advice-list {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-followup {
+  margin-top: 10px;
+  font-size: 10px;
+  color: #374151;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-followup {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-area-section {
+  margin-top: 10px;
+}
+
+.rx-preview-scope .rx-area-item {
+  font-size: 11.5px;
+  color: #1e293b;
+  margin: 0 0 5px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-area-item {
+  font-size: 10px;
+}
+
+.rx-preview-scope .rx-notes {
+  margin-top: 8px;
+  font-size: 10px;
+  color: #4b5563;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-notes {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-signature-block {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.rx-preview-scope .rx-signature-box {
+  text-align: center;
+  min-width: 180px;
+}
+
+.rx-preview-scope .rx-signature-line {
+  border: none;
+  border-top: none;
+  padding-top: 4px;
+  font-size: 10px;
+  color: #374151;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-signature-line {
+  font-size: 9px;
+}
+
+.rx-preview-scope .rx-stamp {
+  margin-top: 10px;
+  max-height: 68px;
+  max-width: 150px;
+}
+
+.rx-preview-scope .rx-footer {
+  margin-top: 8px;
+  padding-top: 0;
+  border: none;
+  border-top: none;
+  text-align: center;
+  color: #6b7280;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.rx-preview-scope.rx-preview-scope--compact .rx-footer {
+  font-size: 8px;
+}
+
+@media (max-width: 700px) {
+  .rx-preview-scope .rx-demographics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rx-preview-scope .rx-main {
+    grid-template-columns: 1fr;
+  }
+
+  .rx-preview-scope .rx-sidebar {
+    border-right: 0;
+    border-bottom: 1px solid #e5e7eb;
+    padding-right: 0;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+}
+
+/* Prescription drug / ICD-10 autocomplete dropdowns */
+.autocomplete-dropdown {
+  position: absolute;
+  z-index: 200;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.autocomplete-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-color, #f3f4f6);
+  font-size: 13px;
+}
+
+.autocomplete-item:hover {
+  background: var(--bg-elevated, #f8fafc);
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+/* Prescription list: status badge + quick status select */
+.rx-status-cell {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rx-quick-status-select {
+  width: 100%;
+  font-size: 11px;
+  padding: 4px 22px 4px 6px;
+  box-sizing: border-box;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 6px center;
+  background-color: var(--bg-primary, #fff);
+}

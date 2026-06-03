@@ -1,0 +1,20 @@
+# Example Nginx config for serving the Vite build (SPA).
+# Copy to your server and set root to your dist path (e.g. /var/www/alien-erp).
+# This makes /login, /dashboard, etc. return index.html so the React app can route.
+
+server {
+    listen 80;
+    server_name alien-erp.i2gether.com;
+    root /var/www/alien-erp;   # or wherever your frontend dist is
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /assets/ {
+        # Cache static assets
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}

@@ -1,0 +1,31 @@
+package com.easyops.auth.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+/**
+ * Change Password Request DTO
+ *
+ * Authenticated password update (authorization via JWT / gateway); current password is not required.
+ */
+public class ChangePasswordRequest {
+
+    @NotBlank(message = "New password is required")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    private String newPassword;
+
+    public ChangePasswordRequest() {
+    }
+
+    public ChangePasswordRequest(String newPassword) {
+        this.newPassword = newPassword;
+    }
+
+    public String getNewPassword() {
+        return newPassword;
+    }
+
+    public void setNewPassword(String newPassword) {
+        this.newPassword = newPassword;
+    }
+}

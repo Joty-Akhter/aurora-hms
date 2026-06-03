@@ -1,0 +1,17 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy the entire repository to ensure all modules are available
+COPY . .
+
+# Build only Bank service
+RUN mvn clean package -pl services/bank-service -am -DskipTests spring-boot:repackage
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+COPY --from=build /app/services/bank-service/target/bank-service-1.0.0.jar app.jar
+
+EXPOSE 8092
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

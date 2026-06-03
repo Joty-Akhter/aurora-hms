@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Enable Hospital module in frontend when hospital-service starts.
+        Updates system.settings so the frontend shows Hospital menus.
+    -->
+    <changeSet id="007-enable-hospital-modules" author="hospital-service">
+        <comment>Enable hospital module in frontend module config when hospital-service runs</comment>
+        <sqlFile path="007-enable-hospital-modules.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

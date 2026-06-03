@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:commtest;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS communication
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        default_schema: communication
+    show-sql: false
+  liquibase:
+    enabled: false
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+communication:
+  providers:
+    pondit:
+      stub: true
+  phase3:
+    worker:
+      enabled: false
+    kafka:
+      enabled: false
+    dlq:
+      publishing-enabled: false

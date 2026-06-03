@@ -1,0 +1,80 @@
+package com.easyops.pharma.entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "adjustments", schema = "pharma")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class Adjustment implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+    
+    @Column(name = "organization_id", nullable = false)
+    private UUID organizationId;
+    
+    @Column(name = "territory_id", nullable = false)
+    private UUID territoryId;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "territory_id", insertable = false, updatable = false)
+    private Territory territory;
+    
+    @Column(name = "adjustment_type", length = 50, nullable = false)
+    private String adjustmentType; // DAMAGE, EXPIRY
+    
+    @Column(name = "adjustment_date", nullable = false)
+    private LocalDate adjustmentDate;
+    
+    @Column(name = "year", nullable = false)
+    private Integer year;
+    
+    @Column(name = "month", nullable = false)
+    private Integer month; // 1-12
+    
+    @Column(name = "total_adjustment_amount", precision = 19, scale = 2)
+    private BigDecimal totalAdjustmentAmount; // Σ (Adjustment Quantity × TP with VAT)
+    
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+    
+    @Column(name = "status", length = 50)
+    private String status = "DRAFT"; // DRAFT, SUBMITTED, COMPLETED
+    
+    @OneToMany(mappedBy = "adjustment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AdjustmentLine> adjustmentLines;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+    
+    @Column(name = "created_by")
+    private UUID createdBy;
+    
+    @Column(name = "updated_by")
+    private UUID updatedBy;
+}
+

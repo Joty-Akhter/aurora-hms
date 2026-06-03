@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Medical Code Tables and Seed Data
+        This changeset creates tables for ICD-10, ICD-11, and SNOMED CT codes
+        and populates them with common codes
+    -->
+    <changeSet id="003-medical-codes" author="hospital-service">
+        <!-- Allow DBs that ran an earlier revision of this changeset (checksum changed when SQL/XML was edited). -->
+        <validCheckSum>9:bc7cabc153f6626201be84d8d0db147d</validCheckSum>
+        <comment>Create tables for storing medical codes (ICD-10, ICD-11, SNOMED CT) and seed common codes</comment>
+        <sqlFile path="003-medical-codes.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

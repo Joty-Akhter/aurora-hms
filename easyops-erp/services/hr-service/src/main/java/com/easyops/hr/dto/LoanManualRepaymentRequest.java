@@ -1,0 +1,21 @@
+package com.easyops.hr.dto;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Data
+public class LoanManualRepaymentRequest {
+
+    @NotNull
+    @DecimalMin(value = "0.01", inclusive = true)
+    private BigDecimal amount;
+
+    @NotNull
+    private LocalDate paymentDate;
+
+    private String notes;
+}

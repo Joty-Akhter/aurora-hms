@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: user-management-service-test
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          create_namespaces: true
+
+logging:
+  level:
+    com.easyops: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+

@@ -1,0 +1,213 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "easyops-system-overview",
+    "title": "EasyOps - System Overview",
+    "tags": ["easyops", "overview"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 0,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 },
+        "type": "stat",
+        "title": "Total Services",
+        "targets": [
+          {
+            "expr": "count(up{job=~\".+-service\"})",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 2,
+        "gridPos": { "h": 4, "w": 6, "x": 6, "y": 0 },
+        "type": "stat",
+        "title": "Services UP",
+        "targets": [
+          {
+            "expr": "count(up{job=~\".+-service\"} == 1)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 3,
+        "gridPos": { "h": 4, "w": 6, "x": 12, "y": 0 },
+        "type": "stat",
+        "title": "Services DOWN",
+        "targets": [
+          {
+            "expr": "count(up{job=~\".+-service\"} == 0)",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 1, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 4,
+        "gridPos": { "h": 4, "w": 6, "x": 18, "y": 0 },
+        "type": "stat",
+        "title": "Avg Response Time (ms)",
+        "targets": [
+          {
+            "expr": "avg(http_server_requests_seconds_sum / http_server_requests_seconds_count) * 1000",
+            "refId": "A"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "unit": "ms",
+            "color": { "mode": "thresholds" },
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                { "value": null, "color": "green" },
+                { "value": 200, "color": "yellow" },
+                { "value": 500, "color": "red" }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "id": 5,
+        "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+        "type": "graph",
+        "title": "Request Rate (req/min)",
+        "targets": [
+          {
+            "expr": "sum(rate(http_server_requests_total[1m])) by (job) * 60",
+            "legendFormat": "{{job}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "short", "label": "Requests/min" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 6,
+        "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+        "type": "graph",
+        "title": "Error Rate (%)",
+        "targets": [
+          {
+            "expr": "sum(rate(http_server_requests_total{status=~\"5..\"}[1m])) by (job) / sum(rate(http_server_requests_total[1m])) by (job) * 100",
+            "legendFormat": "{{job}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "label": "Error Rate" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 7,
+        "gridPos": { "h": 8, "w": 8, "x": 0, "y": 12 },
+        "type": "graph",
+        "title": "CPU Usage (%)",
+        "targets": [
+          {
+            "expr": "process_cpu_usage{job=~\".+-service\"} * 100",
+            "legendFormat": "{{job}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "percent", "label": "CPU Usage", "max": 100 },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 8,
+        "gridPos": { "h": 8, "w": 8, "x": 8, "y": 12 },
+        "type": "graph",
+        "title": "Memory Usage (MB)",
+        "targets": [
+          {
+            "expr": "jvm_memory_used_bytes{job=~\".+-service\",area=\"heap\"} / 1024 / 1024",
+            "legendFormat": "{{job}}",
+            "refId": "A"
+          }
+        ],
+        "yaxes": [
+          { "format": "mbytes", "label": "Memory" },
+          { "format": "short" }
+        ]
+      },
+      {
+        "id": 9,
+        "gridPos": { "h": 8, "w": 8, "x": 16, "y": 12 },
+        "type": "table",
+        "title": "Service Status",
+        "targets": [
+          {
+            "expr": "up{job=~\".+-service\"}",
+            "format": "table",
+            "instant": true,
+            "refId": "A"
+          }
+        ],
+        "transformations": [
+          {
+            "id": "organize",
+            "options": {
+              "excludeByName": {
+                "Time": true,
+                "__name__": true
+              },
+              "indexByName": {
+                "job": 0,
+                "Value": 1
+              },
+              "renameByName": {
+                "job": "Service",
+                "Value": "Status"
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite": true
+}
+

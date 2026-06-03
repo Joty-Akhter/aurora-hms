@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!--
+        Phase 1.1: Doctor Departments Master Data
+        This changeset inserts common medical departments/specialties
+        that are typically found in hospitals
+    -->
+    <changeSet id="006-doctor-departments-master-data" author="hospital-service">
+        <comment>Phase 1.1 - Insert master data for common doctor departments/specialties</comment>
+        <sqlFile path="006-doctor-departments-master-data.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="true"
+                 stripComments="true"
+                 endDelimiter=";"/>
+    </changeSet>
+
+</databaseChangeLog>

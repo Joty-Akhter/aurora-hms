@@ -1,0 +1,49 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy Maven settings for better dependency resolution
+COPY maven-settings.xml /usr/share/maven/conf/settings.xml
+
+# Copy the entire repository to ensure all modules are available
+COPY . .
+
+# Configure Maven for better network handling
+ENV MAVEN_OPTS="-Xmx1024m -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.wagon.http.retryHandler.requestSentEnabled=true -Dmaven.wagon.http.retryHandler.delay=1000"
+
+# Build only AP service with retry mechanism and better error handling
+RUN set -e; \
+    echo "Starting Maven build for AP service..."; \
+    mvn clean package -pl services/ap-service -am -DskipTests spring-boot:repackage \
+        --settings /usr/share/maven/conf/settings.xml \
+        --batch-mode \
+        --show-version \
+        --errors \
+        --fail-at-end \
+        --no-transfer-progress || \
+    (echo "First build attempt failed, cleaning and retrying..." && \
+     mvn clean && \
+     mvn package -pl services/ap-service -am -DskipTests spring-boot:repackage \
+        --settings /usr/share/maven/conf/settings.xml \
+        --batch-mode \
+        --show-version \
+        --errors \
+        --fail-at-end \
+        --no-transfer-progress) || \
+    (echo "Second build attempt failed, trying with offline mode disabled..." && \
+     mvn clean package -pl services/ap-service -am -DskipTests spring-boot:repackage \
+        --settings /usr/share/maven/conf/settings.xml \
+        --batch-mode \
+        --show-version \
+        --errors \
+        --fail-at-end \
+        --no-transfer-progress \
+        --update-snapshots)
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+COPY --from=build /app/services/ap-service/target/ap-service-1.0.0.jar app.jar
+
+EXPOSE 8091
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

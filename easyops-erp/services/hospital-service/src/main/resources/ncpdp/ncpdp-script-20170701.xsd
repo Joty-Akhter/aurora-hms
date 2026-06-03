@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Simplified NCPDP SCRIPT Standard 2017071 XSD — NewRx message subset.
+
+  Copyright notice: The NCPDP SCRIPT standard is a licensed specification.
+  This XSD is a structurally accurate simplification for pre-transmission
+  validation within EasyOps EHR. It captures all mandatory and clinically
+  significant optional elements of the NewRx transaction.
+
+  In production, replace with the full licensed XSD obtained from NCPDP
+  (National Council for Prescription Drug Programs, www.ncpdp.org).
+
+  Standard reference:
+    NCPDP SCRIPT Standard, Implementation Guide, Version 2017071
+    Transaction type: NEWRX (New Prescription)
+    Namespace: http://www.ncpdp.org/schema/SCRIPT
+    Attribute versions: DatatypesVersion="20170701" etc.
+-->
+<xs:schema
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tns="http://www.ncpdp.org/schema/SCRIPT"
+    targetNamespace="http://www.ncpdp.org/schema/SCRIPT"
+    elementFormDefault="qualified"
+    attributeFormDefault="unqualified">
+
+  <!-- =========================================================
+       Root element
+       ========================================================= -->
+
+  <xs:element name="Message" type="tns:MessageType"/>
+
+  <xs:complexType name="MessageType">
+    <xs:sequence>
+      <xs:element name="Header" type="tns:HeaderType"/>
+      <xs:element name="Body"   type="tns:BodyType"/>
+    </xs:sequence>
+    <xs:attribute name="DatatypesVersion"   type="xs:string" use="required"/>
+    <xs:attribute name="TransactionDomain"  type="xs:string" use="required"/>
+    <xs:attribute name="TransactionVersion" type="xs:string" use="required"/>
+    <xs:attribute name="StructuresVersion"  type="xs:string" use="required"/>
+    <xs:attribute name="ECLVersion"         type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <!-- =========================================================
+       Header
+       ========================================================= -->
+
+  <xs:complexType name="HeaderType">
+    <xs:sequence>
+      <!-- To: target (pharmacy) qualified identifier -->
+      <xs:element name="To"          type="tns:QualifiedIdType"/>
+      <!-- From: sender (prescriber) qualified identifier -->
+      <xs:element name="From"        type="tns:QualifiedIdType"/>
+      <xs:element name="MessageID"   type="xs:string"/>
+      <xs:element name="SentTime"    type="xs:string"/>
+      <xs:element name="Security"    type="tns:SecurityType"       minOccurs="0"/>
+      <xs:element name="SenderSoftware" type="tns:SenderSoftwareType" minOccurs="0"/>
+      <xs:element name="TestMessage" type="tns:YesNoType"          minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- A string value with a required Qualifier attribute -->
+  <xs:complexType name="QualifiedIdType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="Qualifier" type="xs:string" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="SecurityType">
+    <xs:sequence>
+      <xs:element name="UsernameToken" type="tns:UsernameTokenType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="UsernameTokenType">
+    <xs:sequence>
+      <xs:element name="Username" type="xs:string"/>
+      <xs:element name="Password" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SenderSoftwareType">
+    <xs:sequence>
+      <xs:element name="SenderSoftwareDeveloper"      type="xs:string"/>
+      <xs:element name="SenderSoftwareProduct"        type="xs:string"/>
+      <xs:element name="SenderSoftwareVersionRelease" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="YesNoType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Y"/>
+      <xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- =========================================================
+       Body
+       ========================================================= -->
+
+  <xs:complexType name="BodyType">
+    <xs:sequence>
+      <xs:element name="NewRx" type="tns:NewRxType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- =========================================================
+       NewRx
+       ========================================================= -->
+
+  <xs:complexType name="NewRxType">
+    <xs:sequence>
+      <!-- Written date at NewRx level (mandatory) -->
+      <xs:element name="WrittenDate"          type="tns:DateType"/>
+      <!-- Patient (mandatory) -->
+      <xs:element name="Patient"              type="tns:PatientType"/>
+      <!-- Prescriber (mandatory) -->
+      <xs:element name="Prescriber"           type="tns:PrescriberType"/>
+      <!-- Pharmacy (mandatory) -->
+      <xs:element name="Pharmacy"             type="tns:PharmacyType"/>
+      <!-- Primary medication (mandatory) -->
+      <xs:element name="MedicationPrescribed" type="tns:MedicationPrescribedType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- =========================================================
+       Patient
+       ========================================================= -->
+
+  <xs:complexType name="PatientType">
+    <xs:sequence>
+      <xs:element name="HumanPatient" type="tns:HumanPatientType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="HumanPatientType">
+    <xs:sequence>
+      <xs:element name="Name"           type="tns:PersonNameType"/>
+      <xs:element name="Gender"         type="tns:GenderCodeType"   minOccurs="0"/>
+      <xs:element name="DateOfBirth"    type="tns:DateType"         minOccurs="0"/>
+      <xs:element name="Address"        type="tns:AddressType"      minOccurs="0"/>
+      <xs:element name="Identification" type="tns:PatientIdType"    minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="GenderCodeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="M"/>
+      <xs:enumeration value="F"/>
+      <xs:enumeration value="U"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- =========================================================
+       Prescriber
+       ========================================================= -->
+
+  <xs:complexType name="PrescriberType">
+    <xs:sequence>
+      <xs:element name="NonVeterinarian" type="tns:PrescriberDetailType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PrescriberDetailType">
+    <xs:sequence>
+      <xs:element name="Name"                 type="tns:PersonNameType"/>
+      <xs:element name="Identification"       type="tns:PrescriberIdType"/>
+      <xs:element name="Address"              type="tns:AddressType"       minOccurs="0"/>
+      <xs:element name="CommunicationNumbers" type="tns:CommNumbersType"   minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PrescriberIdType">
+    <xs:sequence>
+      <xs:element name="NPI"                type="xs:string" minOccurs="0"/>
+      <xs:element name="DEANumber"          type="xs:string" minOccurs="0"/>
+      <xs:element name="StateLicenseNumber" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- =========================================================
+       Pharmacy
+       ========================================================= -->
+
+  <xs:complexType name="PharmacyType">
+    <xs:sequence>
+      <xs:element name="Identification"       type="tns:PharmacyIdType"/>
+      <xs:element name="StoreName"            type="xs:string"           minOccurs="0"/>
+      <xs:element name="Address"              type="tns:AddressType"     minOccurs="0"/>
+      <xs:element name="CommunicationNumbers" type="tns:CommNumbersType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PharmacyIdType">
+    <xs:sequence>
+      <xs:element name="NPI"      type="xs:string" minOccurs="0"/>
+      <xs:element name="NCPDPID"  type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- =========================================================
+       MedicationPrescribed
+       ========================================================= -->
+
+  <xs:complexType name="MedicationPrescribedType">
+    <xs:sequence>
+      <!-- Drug description (required — free-text name) -->
+      <xs:element name="DrugDescription" type="xs:string"/>
+      <!-- Coded drug identifier (NDC or RxNorm) -->
+      <xs:element name="DrugCoded"       type="tns:DrugCodedType"   minOccurs="0"/>
+      <xs:element name="Quantity"        type="tns:QuantityType"    minOccurs="0"/>
+      <xs:element name="DaysSupply"      type="xs:string"           minOccurs="0"/>
+      <xs:element name="Sig"             type="tns:SigType"         minOccurs="0"/>
+      <xs:element name="Refills"         type="tns:RefillsType"     minOccurs="0"/>
+      <!-- Substitutions: "0"=allowed (DAW 0), "1"=brand necessary (DAW 1) ... -->
+      <xs:element name="Substitutions"   type="xs:string"           minOccurs="0"/>
+      <xs:element name="WrittenDate"     type="tns:DateType"        minOccurs="0"/>
+      <xs:element name="LastFillDate"    type="tns:DateType"        minOccurs="0"/>
+      <xs:element name="Diagnosis"       type="tns:DiagnosisType"   minOccurs="0"/>
+      <xs:element name="Note"            type="xs:string"           minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DrugCodedType">
+    <xs:sequence>
+      <!-- ProductCode: Qualifier="ND" (NDC) | "RXN" (RxNorm) | "DN" (drug name) -->
+      <xs:element name="ProductCode" type="tns:QualifiedIdType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="QuantityType">
+    <xs:sequence>
+      <xs:element name="Value"                type="xs:string"/>
+      <!-- CodeListQualifier: "EA"=each, "C28253"=mL, etc. -->
+      <xs:element name="CodeListQualifier"    type="xs:string" minOccurs="0"/>
+      <xs:element name="QuantityUnitOfMeasure" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SigType">
+    <xs:sequence>
+      <xs:element name="SigText" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RefillsType">
+    <xs:sequence>
+      <!-- Qualifier: "DF"=definite fill count, "PRN"=as needed -->
+      <xs:element name="Qualifier" type="xs:string"/>
+      <xs:element name="Value"     type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="DiagnosisType">
+    <xs:sequence>
+      <xs:element name="Principal" type="tns:PrincipalDiagnosisType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PrincipalDiagnosisType">
+    <xs:sequence>
+      <!-- DiagnosisCode Qualifier="ABK" → ICD-10-CM, "ABJ" → ICD-9-CM -->
+      <xs:element name="DiagnosisCode" type="tns:QualifiedIdType"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- =========================================================
+       Shared types
+       ========================================================= -->
+
+  <xs:complexType name="PersonNameType">
+    <xs:sequence>
+      <xs:element name="LastName"   type="xs:string"/>
+      <xs:element name="FirstName"  type="xs:string"/>
+      <xs:element name="MiddleName" type="xs:string" minOccurs="0"/>
+      <xs:element name="Prefix"     type="xs:string" minOccurs="0"/>
+      <xs:element name="Suffix"     type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- NCPDP date wrapper: <DateEl><Date>YYYYMMDD</Date></DateEl> -->
+  <xs:complexType name="DateType">
+    <xs:sequence>
+      <xs:element name="Date" type="tns:NcpdpDateString"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- NCPDP date format: 8 digits YYYYMMDD -->
+  <xs:simpleType name="NcpdpDateString">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{8}"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="AddressType">
+    <xs:sequence>
+      <xs:element name="AddressLine1" type="xs:string" minOccurs="0"/>
+      <xs:element name="AddressLine2" type="xs:string" minOccurs="0"/>
+      <xs:element name="City"         type="xs:string" minOccurs="0"/>
+      <xs:element name="State"        type="xs:string" minOccurs="0"/>
+      <xs:element name="ZipCode"      type="xs:string" minOccurs="0"/>
+      <xs:element name="CountryCode"  type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CommNumbersType">
+    <xs:sequence>
+      <xs:element name="PrimaryTelephone"   type="tns:TelephoneType" minOccurs="0"/>
+      <xs:element name="SecondaryTelephone" type="tns:TelephoneType" minOccurs="0"/>
+      <xs:element name="Fax"               type="tns:TelephoneType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="TelephoneType">
+    <xs:sequence>
+      <xs:element name="Number" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PatientIdType">
+    <xs:sequence>
+      <xs:element name="MedicalRecordIdentificationNumberEHR" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>

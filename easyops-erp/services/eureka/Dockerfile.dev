@@ -1,0 +1,26 @@
+# Development Dockerfile for Eureka Server
+FROM maven:3.9-eclipse-temurin-21
+
+# Set working directory
+WORKDIR /app
+
+# Install curl and wget for health checks
+RUN apt-get update && apt-get install -y curl wget && rm -rf /var/lib/apt/lists/*
+
+# Copy full repo to preserve multi-module layout
+COPY . .
+
+# Download dependencies for this module (and required modules)
+# RUN mvn -B -q -pl services/eureka -am dependency:go-offline
+# Dependencies will be downloaded on first container run instead
+
+# Expose port
+EXPOSE 8761
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8761/actuator/health || exit 1
+
+# Run the application from the module directory
+WORKDIR /app/services/eureka
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.profiles=dev"]

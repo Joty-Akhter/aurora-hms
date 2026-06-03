@@ -1,0 +1,17 @@
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy the entire repository to ensure all modules are available
+COPY . .
+
+# Build only AR service
+RUN mvn clean package -pl services/ar-service -am -DskipTests spring-boot:repackage
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+COPY --from=build /app/services/ar-service/target/ar-service-1.0.0.jar app.jar
+
+EXPOSE 8090
+
+ENTRYPOINT ["java", "-jar", "app.jar"]

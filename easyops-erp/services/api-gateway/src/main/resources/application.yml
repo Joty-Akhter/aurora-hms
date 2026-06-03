@@ -1,0 +1,266 @@
+server:
+  port: 8081
+
+# Phase 3 — RBAC: see RBAC.md in this module. Route→permission maps are not implemented here;
+# services enforce permissions. Optional future keys (example only, not read by code yet):
+# gateway:
+#   rbac:
+#     enabled: false
+#     routes:
+#       - path: /api/hospital/**
+#         require-any-permission: [ HOSPITAL_VIEW, HOSPITAL_MANAGE ]
+
+spring:
+  application:
+    name: api-gateway
+  profiles:
+    active: dev
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: user-management
+          uri: lb://user-management-service
+          predicates:
+            - Path=/api/users/**
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+        - id: rbac-service
+          uri: lb://rbac-service
+          predicates:
+            - Path=/api/rbac/**
+        - id: system-config
+          uri: lb://system-config-service
+          predicates:
+            - Path=/api/system/**
+        - id: monitoring-service
+          uri: lb://monitoring-service
+          predicates:
+            - Path=/api/monitoring/**
+        - id: organization-service
+          uri: lb://organization-service
+          predicates:
+            - Path=/api/organizations/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**, /api/webhooks/**
+        - id: communication-service
+          uri: lb://communication-service
+          predicates:
+            - Path=/api/communications/**, /api/communication-templates/**
+        - id: accounting-service
+          uri: lb://accounting-service
+          predicates:
+            - Path=/api/accounting/**
+        - id: ar-service
+          uri: lb://ar-service
+          predicates:
+            - Path=/api/ar/**
+        - id: ap-service
+          uri: lb://ap-service
+          predicates:
+            - Path=/api/ap/**
+        - id: bank-service
+          uri: lb://bank-service
+          predicates:
+            - Path=/api/bank/**
+        - id: sales-service
+          uri: lb://sales-service
+          predicates:
+            - Path=/api/sales/**
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+        - id: purchase-service
+          uri: lb://purchase-service
+          predicates:
+            - Path=/api/purchase/**
+        - id: hr-service
+          uri: lb://HR-SERVICE
+          predicates:
+            - Path=/api/hr/**
+        - id: pharma-service
+          uri: lb://pharma-service
+          predicates:
+            - Path=/api/pharma/**
+        - id: crm-service
+          uri: lb://crm-service
+          predicates:
+            - Path=/api/crm/**
+          filters:
+            - RewritePath=/api/crm/(?<segment>.*), /${segment}
+        - id: manufacturing-service
+          uri: lb://MANUFACTURING-SERVICE
+          predicates:
+            - Path=/api/manufacturing/**
+          filters:
+            - RewritePath=/api/manufacturing/(?<segment>.*), /${segment}
+        - id: hospital-service-public-web-booking
+          uri: lb://hospital-service
+          predicates:
+            - Path=/api/public/web-booking/**
+        - id: hospital-service
+          uri: lb://hospital-service
+          predicates:
+            - Path=/api/hospital/**
+          filters:
+            - RewritePath=/api/hospital/(?<segment>.*), /api/${segment}
+        - id: hospital-service-easy-prescription
+          uri: lb://hospital-service
+          predicates:
+            - Path=/api/easy-prescription/**
+        - id: hospital-pharmacy-service
+          uri: lb://hospital-pharmacy-service
+          predicates:
+            - Path=/api/hospital-pharmacy/**
+        - id: hospital-billing-service
+          uri: lb://hospital-billing-service
+          predicates:
+            - Path=/api/hospital-billing/**
+        - id: hospital-card-management-service
+          uri: lb://hospital-card-management-service
+          predicates:
+            - Path=/api/hospital-card-management/**
+        - id: hospital-clinical-orders-service
+          uri: lb://hospital-clinical-orders-service
+          predicates:
+            - Path=/api/hospital-clinical-orders/**
+        - id: hospital-corporate-and-discount-service
+          uri: lb://hospital-corporate-and-discount-service
+          predicates:
+            - Path=/api/hospital-corporate-discount/**
+        - id: hospital-scheduling-service
+          uri: lb://hospital-scheduling-service
+          predicates:
+            - Path=/api/hospital-scheduling/**
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_LAST
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+# Downstream service URLs (supports lb:// for Eureka load-balancing)
+services:
+  auth:
+    base-url: ${SERVICES_AUTH_BASE_URL:lb://auth-service}
+
+# JWT Configuration
+jwt:
+  secret: easyops-jwt-secret-key-change-this-in-production-minimum-256-bits
+  expiration: 86400000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    com.easyops.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.gateway.handler: TRACE
+    org.springframework.web.cors.reactive: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    com.easyops.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.cors.reactive: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# Local Profile
+spring:
+  config:
+    activate:
+      on-profile: local
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+    initial-instance-info-replication-interval-seconds: 5
+    instance-info-replication-interval-seconds: 10
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+---
+# Production Profile
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+logging:
+  level:
+    root: WARN
+    com.easyops: INFO
+  file:
+    name: logs/api-gateway.log
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,164 @@
+spring:
+  application:
+    name: hospital-pharmacy-service
+
+  # Kafka (WS-K4): set bootstrap servers for local/stage; consumers/producers fail fast if unset in environments that publish events.
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+  liquibase:
+    enabled: false
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/easyops}
+    username: ${SPRING_DATASOURCE_USERNAME:easyops}
+    password: ${SPRING_DATASOURCE_PASSWORD:easyops123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_schema: hospital_pharmacy
+
+server:
+  port: 8110
+
+services:
+  rbac:
+    base-url: ${SERVICES_RBAC_BASE_URL:http://localhost:8084}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    com.easyops.hospitalpharmacy: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Allow dispensing when recorded on-hand is insufficient (audit reason defaulted in service if omitted).
+hospital:
+  pharmacy:
+    dispense:
+      allow-negative-stock: true
+      require-supervisor-for-override: false
+      require-witness-for-controlled: false
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops.hospitalpharmacy: DEBUG
+
+hospital:
+  pharmacy:
+    integration:
+      billing:
+        post-charges-enabled: false
+        post-return-credits-enabled: false
+        default-unit-price: 0
+        source-service-name: hospital-pharmacy-service
+      hospital-service:
+        in-house-fill-enabled: true
+      clinical-safety:
+        # P4 WS-I — POST hospital-service /api/integrations/pharmacy/dispense-clinical-screen per line
+        check-at-dispense-enabled: false
+        block-interaction-severities:
+          - CONTRAINDICATED
+          - MAJOR
+        block-on-cross-reactivity-allergies: false
+      events:
+        publish-enabled: true
+        topic: hospital-events
+        # Optional: fixed pharmacy for prescription.created → dispense queue (WS-K3). If unset, first active location is used.
+        # default-pharmacy-location-id: 00000000-0000-0000-0000-000000000000
+    import:
+      # Set this to the JSON path containing scraped medicine data when you want to import.
+      # Example for local dev:
+      # drug-master-json-path: /Users/til/workspace/mine/ehr/scraped_data_paginated/brands_data.json
+      drug-master-json-path: ""
+    # Phase P3 — regional paper Rx / external validation (pharmacy-gaps §WS-E)
+    regional:
+      require-ehr-prescription-for-rx-skus: false
+      block-on-soft-validation-failure: false
+
+    # Phase P1 — pharmacy-gaps-implementation-plan (D1/D2): stock override behind flags (default = strict legacy behavior)
+    dispense:
+      allow-negative-stock: true
+      require-supervisor-for-override: false
+      require-witness-for-controlled: false
+      idempotency-retention-days: 90
+      idempotency-cleanup-cron: "0 0 3 * * *"
+
+    stock:
+      # Absolute quantity delta above which stock adjustment requires approval workflow.
+      # Set to a low value (e.g. 100) to enforce approval on large adjustments.
+      adjustment-approval-threshold: 999999
+

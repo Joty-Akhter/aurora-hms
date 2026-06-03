@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Default SMS body for appointment.created.v1 (hospital-scheduling → Kafka → communication-service). -->
+    <changeSet id="communication-005-appointment-sms-template-en" author="aurora-hms">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM communication.comm_template
+                WHERE template_key = 'appointment.lifecycle'
+                  AND channel = 'SMS'
+                  AND locale = 'en'
+                  AND status = 'ACTIVE'
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO communication.comm_template (
+                id,
+                template_key,
+                channel,
+                locale,
+                version,
+                status,
+                subject_template,
+                body_template,
+                variables_schema,
+                created_by,
+                created_at,
+                updated_at,
+                activated_at,
+                activated_by
+            ) VALUES (
+                'f1e2d3c4-b5a6-4789-abcd-ef0000000005'::uuid,
+                'appointment.lifecycle',
+                'SMS',
+                'en',
+                1,
+                'ACTIVE',
+                NULL,
+                'Assalamu Alaikum, Your {{tokenLabel}} on {{appointmentDate}} with {{doctorName}} Report on {{reportTimeWindow}} at {{locationLine}}. {{mapsUrl}}',
+                '{"allowed":["patientName","appointmentDate","recipientPhone","doctorName","tokenLabel","reportTimeWindow","locationLine","mapsUrl","appointmentId","patientId","slotStart","slotEnd","status","lifecycleKind"]}',
+                'liquibase:005-appointment-sms-template-en',
+                NOW(),
+                NOW(),
+                NOW(),
+                'liquibase:005-appointment-sms-template-en'
+            );
+        </sql>
+        <rollback>
+            DELETE FROM communication.comm_template
+            WHERE id = 'f1e2d3c4-b5a6-4789-abcd-ef0000000005'::uuid;
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

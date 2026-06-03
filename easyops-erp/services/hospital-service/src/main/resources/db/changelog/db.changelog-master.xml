@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Initial Hospital EHR Schema -->
+    <include file="changesets/001-initial-schema.xml" relativeToChangelogFile="true"/>
+
+    <!-- Hospital/EHR Module Permissions -->
+    <include file="changesets/002-hospital-permissions.xml" relativeToChangelogFile="true"/>
+
+    <!-- Medical Code Tables (ICD-10, ICD-11, SNOMED CT) -->
+    <include file="changesets/003-medical-codes.xml" relativeToChangelogFile="true"/>
+
+    <!-- Add Missing Prescription Fields -->
+    <include file="changesets/004-add-prescription-fields.xml" relativeToChangelogFile="true"/>
+
+    <!-- Phase 1.1: Doctor Management Schema -->
+    <include file="changesets/005-doctor-management-schema.xml" relativeToChangelogFile="true"/>
+
+    <!-- Phase 1.1: Doctor Departments Master Data -->
+    <include file="changesets/006-doctor-departments-master-data.xml" relativeToChangelogFile="true"/>
+
+    <!-- Enable Hospital module in frontend when hospital-service starts -->
+    <include file="changesets/007-enable-hospital-modules.xml" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Pharmacy shared schema (drug catalog, formulary, locations) -->
+    <include file="changesets/008-hospital-pharmacy-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Pharmacy stock and stock movement schema -->
+    <include file="changesets/009-hospital-pharmacy-stock-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Pharmacy dispense orders and lines schema -->
+    <include file="changesets/010-hospital-pharmacy-dispense-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Pharmacy drug master data seed (manufacturers + drugs from scraped JSON) -->
+    <include file="changesets/011-hospital-pharmacy-drug-master-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Billing schema (empty schema in Phase 0) -->
+    <include file="changesets/012-hospital-billing-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Billing payments and refunds schema (Phase 2) -->
+    <include file="changesets/013-hospital-billing-payments.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Billing adjustments schema (Phase 4) -->
+    <include file="changesets/014-hospital-billing-adjustments.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Billing invoice-level discounts and discount audit (Phase 3) -->
+    <include file="changesets/015-hospital-billing-invoice-discounts-and-audit.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Card Management schema (Phase 0 – empty schema; Phase 1 adds tables) -->
+    <include file="changesets/016-hospital-card-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Card Management core tables (Phase 1.1) -->
+    <include file="changesets/017-hospital-card-core-tables.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Card Management transactions (Phase 1.5 – TOPUP/ADJUSTMENT) -->
+    <include file="changesets/018-hospital-card-transactions.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Card Management limit usage (Phase 3.1) -->
+    <include file="changesets/019-hospital-card-limit-usage.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Corporate and Discount schema + Phase 1 (corporates, contracts) -->
+    <include file="changesets/020-hospital-corporate-discount-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Corporate and Discount – coverage rules, packages, package_items, corporate_tariffs (Phase 2) -->
+    <include file="changesets/021-hospital-corporate-discount-coverage-tariffs.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Corporate and Discount – discount_schemes, discount_approval_levels, discount_decisions (Phase 3) -->
+    <include file="changesets/022-hospital-corporate-discount-discount-schemes.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Clinical Orders schema (Phase 0 – empty schema; Phase 1 adds tables) -->
+    <include file="changesets/021-hospital-clinical-orders-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Clinical Orders core tables (Phase 1) -->
+    <include file="changesets/022-hospital-clinical-orders-core-tables.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling schema + Phase 1 tables (resources, working hours, slots, blackouts, reservations) -->
+    <include file="changesets/023-hospital-scheduling-schema.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Card Management – status change reason (Phase 4.3 audit) -->
+    <include file="changesets/024-hospital-card-status-reason.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Clinical Orders – result_links (Phase 2.1) -->
+    <include file="changesets/025-hospital-clinical-orders-result-links.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Clinical Orders – order audit logs (Phase 3.3) -->
+    <include file="changesets/026-hospital-clinical-orders-audit.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Clinical Orders – facility_id (Phase 4.1) -->
+    <include file="changesets/027-hospital-clinical-orders-facility.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling – appointments (Phase 2.1 OPD) -->
+    <include file="changesets/028-hospital-scheduling-appointments.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling – planned admissions (Phase 3.1 IPD) -->
+    <include file="changesets/029-hospital-scheduling-planned-admissions.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling – roster blocks (Phase 4.1) -->
+    <include file="changesets/030-hospital-scheduling-roster-blocks.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling – waitlist (Phase 5.1) -->
+    <include file="changesets/031-hospital-scheduling-waitlist.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital Scheduling – reschedule/cancel idempotency keys (Phase 2) -->
+    <include file="changesets/032-hospital-scheduling-appointment-idempotency-keys.sql" relativeToChangelogFile="true"/>
+
+    <!-- Demo tenant: Aurora Hospital in admin.organizations (logo, address, contacts) -->
+    <include file="changesets/033-aurora-hospital-organization-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: multiple medicines per prescription (line items) -->
+    <include file="changesets/034-prescription-medications.xml" relativeToChangelogFile="true"/>
+
+    <!-- RBAC Phase 1: PRESCRIBING_AUTHORITY role (prescription permissions) -->
+    <include file="changesets/035-prescribing-authority-role.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC Phase 4: pharmacist (dispense) + transmit-only variant roles -->
+    <include file="changesets/036-phase4-clinical-roles.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC: HOSPITAL_VIEW on PRESCRIBING_AUTHORITY (nav + pharmacy catalog read) -->
+    <include file="changesets/037-prescribing-authority-hospital-view.sql" relativeToChangelogFile="true"/>
+
+    <!-- Expand dosage_form CHECK constraints to match full DosageForm enum -->
+    <include file="changesets/038-prescription-dosage-form-constraint.sql" relativeToChangelogFile="true"/>
+
+    <!-- Add missing columns to ehr.prescription_interactions (entity fields added after initial schema) -->
+    <include file="changesets/039-prescription-interactions-missing-columns.sql" relativeToChangelogFile="true"/>
+
+    <!-- Easy Prescription: server-side workspace JSON + audit -->
+    <include file="changesets/040-easy-prescription-workspace.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP-1 / EP-11: OPD vs IPD context on prescription row -->
+    <include file="changesets/041-ep-prescription-encounter-mode.sql" relativeToChangelogFile="true"/>
+
+    <!-- FR-P1.7: interaction categories for pregnancy, dosing, renal/hepatic alerts -->
+    <include file="changesets/042-prescription-interaction-categories-fr-p1-7.sql" relativeToChangelogFile="true"/>
+
+    <!-- Allow null changed_by on prescription_history for webhook-driven fill-status updates -->
+    <include file="changesets/043-prescription-history-changedby-nullable.sql" relativeToChangelogFile="true"/>
+
+    <!-- FR-P1.4a: Multi-Diagnosis – normalised prescription_diagnoses table (replaces single diagnosisCode) -->
+    <include file="changesets/044-prescription-diagnoses.sql" relativeToChangelogFile="true"/>
+
+    <!-- FR-P3.11a: Per-integration webhook secrets for fill-status HMAC-SHA256 authentication -->
+    <include file="changesets/045-webhook-integrations.sql" relativeToChangelogFile="true"/>
+
+    <!-- FR-P3.5: Pharmacy Directory – first-class master data for retail/e-prescribing pharmacies -->
+    <include file="changesets/046-pharmacy-directory.sql" relativeToChangelogFile="true"/>
+
+    <!--
+      Gap N3: File 047 uses inner changeset id hospital-service:046-prescription-allergy-check-match-type
+      (filename prefix 047 ≠ id prefix 046). Do not rename the id to match the file — Liquibase would treat
+      it as a new changeset and re-apply ALTERs. See README-LIQUIBASE-CHANGESET-IDS.md in this directory.
+    -->
+    <!-- FR-P1.7 / FR-P1.2 Phase 1: allergy match_type and clinical_note columns -->
+    <include file="changesets/047-prescription-allergy-check-match-type.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP-2: DB trigger enforcing ep_encounter_mode immutability after initial set -->
+    <include file="changesets/048-ep-encounter-mode-immutable.sql" relativeToChangelogFile="true"/>
+
+    <!--
+      Gap N3: File 049 uses inner changeset id hospital-service:048-prescription-transmission-ncpdp-xml
+      (distinct from 048-ep-encounter-mode-immutable-trigger in the previous file). Filename prefix 049 ≠ id
+      prefix in the logical name. Do not rename — see README-LIQUIBASE-CHANGESET-IDS.md.
+    -->
+    <!-- FR-P3.6: NCPDP SCRIPT 2017071 XML payload storage on prescription transmissions -->
+    <include file="changesets/049-prescription-transmission-ncpdp-xml.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP-10 HIPAA: add organization_id, ip_address, http_status to ep_doctor_workspace_audit; make workspace_id nullable for READ audit rows -->
+    <include file="changesets/050-ep-workspace-audit-hipaa-columns.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP-10 HIPAA: permanently drop snapshot_json from ep_doctor_workspace_audit — no PHI may reside in the audit table -->
+    <include file="changesets/051-ep-workspace-audit-drop-snapshot-json.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP: drop prescribed quantity columns — use frequency × duration -->
+    <include file="changesets/052-drop-prescription-quantity-columns.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P1 gaps: dispense line audit columns + idempotency table -->
+    <include file="changesets/053-pharmacy-dispense-phase1-gaps.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P1: full free-text override reason (aligns with stockOverrideReason) -->
+    <include file="changesets/054-dispense-line-override-reason-length.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P2: fill status source, in-house idempotency, billing posted flag, RBAC -->
+    <include file="changesets/055-pharmacy-p2-fill-status-source.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/056-pharmacy-p2-in-house-fill-events.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/057-pharmacy-p2-dispense-billing-posted.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/058-pharmacy-p2-rbac-stock-override-charge.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P3: regional Rx fields, near-expiry rules, receipt reprint audit -->
+    <include file="changesets/059-pharmacy-p3-regional-receipt-formulary-expiry.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/060-pharmacy-p3-formulary-line-override.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P4: controlled profile, witness, reporting indexes (was present but not chained) -->
+    <include file="changesets/060-pharmacy-p4-controlled-safety-reporting.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/061-pharmacy-p4-clinical-safety-override.sql" relativeToChangelogFile="true"/>
+
+    <!-- Patient identity card: PATIENT_IDENTITY product seed for hospital-card-management-service -->
+    <include file="changesets/062-patient-identity-card-product-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Patient identity card: print/reprint/replace audit log -->
+    <include file="changesets/063-patient-identity-card-audit-log.sql" relativeToChangelogFile="true"/>
+
+    <!-- Corporate benefit cards: mapping to hospital-card-management-service registry -->
+    <include file="changesets/064-hospital-corporate-cards.sql" relativeToChangelogFile="true"/>
+    <include file="changesets/065-hospital-corporate-cards-validity-and-block.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Clinical notes: add missing authoring provider columns for entity/schema parity -->
+    <include file="changesets/066-clinical-notes-authoring-provider-columns.sql" relativeToChangelogFile="true"/>
+
+    <!-- Scheduling Phase 7: gap-closure – doctor mappings, audit log, booking_channel, version, channel quotas -->
+    <include file="changesets/067-hospital-scheduling-gap-closure.sql" relativeToChangelogFile="true"/>
+
+    <!-- DICOM: unique SOP Instance UID on imaging attachments (when set) -->
+    <include file="changesets/068-imaging-dicom-sop-instance-uid-unique.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP lookup/reference data table (dosage forms, disease categories, frequencies, instructions, referrals, complaints, medications, advice, tests) -->
+    <include file="changesets/069-ep-lookup-items.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy: add workflow_type to pharmacy_locations (SUPPLIER, CENTRAL_STORE, OUTLET_PHARMACY) -->
+    <include file="changesets/070-pharmacy-location-workflow-type.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: seed 10 dummy patient records for testing -->
+    <include file="changesets/071-ehr-patient-dummy-data.sql" relativeToChangelogFile="true"/>
+
+    <!-- Patient Documents: file uploads (reports, consent, imaging, etc.) -->
+    <include file="changesets/072-patient-documents.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: fix dummy preferred_contact_method value for JPA enum mapping -->
+    <include file="changesets/073-ehr-fix-preferred-contact-method-enum.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: seed 10 sample doctors (hospital.doctors) for testing -->
+    <include file="changesets/074-hospital-sample-doctors.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor appointment settings: appointments_from_web, appointments_from_mobile, slots_per_day, weekly_schedule, off_days -->
+    <include file="changesets/075-doctor-appointment-settings.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor appointment slots: appointment_slots (JSON array, per-slot-with-days model replacing weekly_schedule) -->
+    <include file="changesets/076-doctor-appointment-slots.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: align family_member_relationship CHECK constraint with JPA enum (underscores vs spaces) -->
+    <include file="changesets/077-fix-family-relationship-enum.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: align gender CHECK constraint with JPA enum (Prefer_not_to_answer vs "Prefer not to answer") -->
+    <include file="changesets/078-fix-gender-enum.sql" relativeToChangelogFile="true"/>
+
+    <!-- Single-tenant: remove non-Aurora organizations after repointing EHR/notifications/RBAC (see changeset comment if DELETE fails on full ERP DB) -->
+    <include file="changesets/079-aurora-sole-organization-reset.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR stability fixes: normalize family relationship values and patient document enum/category compatibility -->
+    <include file="changesets/080-fix-ehr-history-and-documents.sql" relativeToChangelogFile="true"/>
+
+    <!-- ICD-11: full MMS 2022-02 catalog seed loaded from provided XLSX -->
+    <include file="changesets/081-icd11-katalog-mms2022-02.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor ↔ user-management portal user link -->
+    <include file="changesets/082-doctor-linked-user-id.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital UI: per-feature menu permission codes (MainLayout) -->
+    <include file="changesets/083-hospital-menu-feature-permissions.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: encounters header table (aligns with JPA Encounter — IPD list, encounter CRUD) -->
+    <include file="changesets/084-ehr-encounters-table.sql" relativeToChangelogFile="true"/>
+
+    <!-- Scheduling: persist appointment SMS contact snapshot (was @Transient; needed after DB reload / reschedule) -->
+    <include file="changesets/085-scheduling-appointment-notification-columns.sql" relativeToChangelogFile="true"/>
+
+    <!-- hospital.doctors: index linked_user_id for encounter / IPD physician resolution -->
+    <include file="changesets/086-doctors-linked-user-id-index.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: seed ICD-10-CM sample codes (e.g. A02.x) for problem/medical history code search -->
+    <include file="changesets/087-seed-icd10-clinical-codes.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: align patient_insurance verification_status with JPA enum names (underscores) -->
+    <include file="changesets/088-patient-insurance-verification-enum.sql" relativeToChangelogFile="true"/>
+
+    <!-- Scheduling: optional slot duration / capacity per working-hours row (doctor max appointments) -->
+    <include file="changesets/089-scheduling-working-hours-slot-overrides.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC: Call Center + Doctor roles (narrow hospital sidebar; appointment clerk API pair) -->
+    <include file="changesets/090-call-center-doctor-roles.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC: appointment view/book on SYSTEM_ADMIN + ORG_ADMIN -->
+    <include file="changesets/091-hospital-appointment-permissions-for-admins.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR: unique CHECK constraint names per schema (patient_insurance vs allergies verification_status) -->
+    <include file="changesets/092-disambiguate-verification-check-constraints.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: replace dummy doctor seed with real department master data from DrDept.xlsx -->
+    <include file="changesets/093-doctor-departments-real-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: replace dummy doctor list with real doctors from DrInfo.xlsx -->
+    <include file="changesets/094-doctors-real-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: seed real chamber-time appointment slots from DrChamberTime.xlsx -->
+    <include file="changesets/095-doctor-chamber-time-real-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: fix appointment_slots day keys to lowercase (UI) + initialise off_days to empty array -->
+    <include file="changesets/096-doctor-appointment-slots-fix.sql" relativeToChangelogFile="true"/>
+
+    <!-- Hospital: create users.users portal accounts + RBAC roles for all system-imported doctors -->
+    <include file="changesets/097-doctor-portal-users-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Clinical Chart master (legacy charge / investigation catalog) + menu permission -->
+    <include file="changesets/098-clinical-chart.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/099-hospital-menu-clinical-chart-permission.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP: advice lookup length + per-user frequency for prescription/template suggestions -->
+    <include file="changesets/100-ep-advice-user-usage.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC: Doctor attendants — appointment view + status updates (no book/reschedule/cancel) -->
+    <include file="changesets/101-doctor-attendants-role.sql" relativeToChangelogFile="true"/>
+
+    <!-- RBAC: Doctor schedule manage + DOCTOR_ATTENDANTS menu/API extension -->
+    <include file="changesets/102-doctor-schedule-manage-permissions.sql" relativeToChangelogFile="true"/>
+
+    <!-- Enable HR module in frontend module config (hr-service has no own Liquibase runner) -->
+    <include file="changesets/103-enable-hr-module.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: product groups and units of measure reference tables -->
+    <include file="changesets/104-pharmacy-product-groups-units.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: drug entity enhancements (pricing, rack, HSN, product code, department) -->
+    <include file="changesets/105-pharmacy-drug-enhancements.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: manufacturer entity enhancements (license, VAT, type, contact) -->
+    <include file="changesets/106-pharmacy-manufacturer-enhancements.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: near-expiry rule effective_to, discount_required, ALLOW_WITH_APPROVAL action -->
+    <include file="changesets/107-pharmacy-near-expiry-rule-enhancements.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: formulary rule versioning + formulary_alternatives table -->
+    <include file="changesets/108-pharmacy-formulary-rule-enhancements.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: stock requisition workflow tables -->
+    <include file="changesets/109-pharmacy-stock-requisition.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: supplier return order workflow tables -->
+    <include file="changesets/110-pharmacy-supplier-return-order.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: emergency purchase entry workflow tables -->
+    <include file="changesets/111-pharmacy-emergency-purchase.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: pharmacy credit accounts and payments tables -->
+    <include file="changesets/112-pharmacy-credit-account.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: stock adjustment approval table -->
+    <include file="changesets/113-pharmacy-stock-adjustment-approval.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: stock_movements reason_code, approved_by, requested_by columns -->
+    <include file="changesets/114-pharmacy-stock-movements-reason-code.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: composite indexes for paginated movement history endpoint -->
+    <include file="changesets/115-pharmacy-movements-pagination-index.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: RBAC permission codes for new workflow capabilities -->
+    <include file="changesets/116-pharmacy-rbac-new-permissions.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: dispense_orders.department_id index for department-wise consumption report -->
+    <include file="changesets/117-pharmacy-dispense-dept-index.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: optimistic-lock version column on pharmacy_credit_accounts -->
+    <include file="changesets/118-pharmacy-credit-account-version.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: notes column on supplier_return_order_lines -->
+    <include file="changesets/119-pharmacy-supplier-return-order-line-notes.sql" relativeToChangelogFile="true"/>
+
+    <!-- Pharmacy P5: return_reference column on supplier_return_orders -->
+    <include file="changesets/120-pharmacy-supplier-return-order-reference.sql" relativeToChangelogFile="true"/>
+
+    <!-- Appointment reschedule permission for CALL_CENTER and DOCTOR_ATTENDANTS -->
+    <include file="changesets/121-appointment-reschedule-permission.sql" relativeToChangelogFile="true"/>
+
+    <!-- Appointment cancel permission for CALL_CENTER and DOCTOR_ATTENDANTS -->
+    <include file="changesets/124-appointment-cancel-permission.sql" relativeToChangelogFile="true"/>
+
+    <!-- EHR-OPD role with Patient EHR add/edit/delete permissions -->
+    <include file="changesets/128-ehr-opd-role.sql" relativeToChangelogFile="true"/>
+
+    <!-- Backfill USER role on doctor portal accounts missing it -->
+    <include file="changesets/129-doctor-portal-user-role-backfill.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor Notes: allow DOCTOR_NOTE clinical note type -->
+    <include file="changesets/130-clinical-notes-doctor-note-type.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor hospital broadcast notes (not patient-specific) -->
+    <include file="changesets/131-doctor-hospital-notes.sql" relativeToChangelogFile="true"/>
+
+    <!-- Doctor hospital notes RBAC (menu view + manage) -->
+    <include file="changesets/132-doctor-hospital-notes-rbac.sql" relativeToChangelogFile="true"/>
+
+    <!-- Scheduling: cap slots per doctor schedule segment -->
+    <include file="changesets/133-scheduling-working-hours-max-slots.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP lookup: suppository dosage form -->
+    <include file="changesets/134-ep-dosage-form-suppository.sql" relativeToChangelogFile="true"/>
+
+    <!-- Scheduling: backfill max_slots_per_segment from doctor appointment_slots -->
+    <include file="changesets/135-scheduling-working-hours-max-slots-backfill.sql" relativeToChangelogFile="true"/>
+
+    <!-- Aurora: HR departments, positions, and sample employees (admin + hr schemas) -->
+    <include file="changesets/136-aurora-hr-departments-employees-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Aurora: GENDER lookup values for employee creation -->
+    <include file="changesets/137-aurora-gender-app-data-seed.sql" relativeToChangelogFile="true"/>
+
+    <!-- Aurora: scheduling.api org link for public web booking -->
+    <include file="changesets/138-aurora-scheduling-api-org-link.sql" relativeToChangelogFile="true"/>
+
+    <!-- Aurora: enable web booking for doctors with configured appointment slots -->
+    <include file="changesets/139-aurora-enable-web-booking-doctors.sql" relativeToChangelogFile="true"/>
+
+    <include file="changesets/140-patient-type.sql" relativeToChangelogFile="true"/>
+
+    <!-- EP lookup: suppository anal-use instruction -->
+    <include file="changesets/141-ep-instruction-suppository-anal-use.sql" relativeToChangelogFile="true"/>
+
+    <!-- Prescribing authority: doctor notes permissions -->
+    <include file="changesets/142-prescribing-authority-doctor-notes.sql" relativeToChangelogFile="true"/>
+
+    <!-- Backfill scheduling working hours for web-bookable doctors -->
+    <include file="changesets/143-backfill-doctor-working-hours.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

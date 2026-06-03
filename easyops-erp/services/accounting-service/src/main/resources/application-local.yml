@@ -1,0 +1,19 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+# Eureka Client Configuration for Local Profile
+# Use localhost so Docker containers can reach this service
+eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+

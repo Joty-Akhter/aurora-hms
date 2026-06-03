@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Liquibase testing
+  postgres:
+    image: postgres:17
+    container_name: easyops-liquibase-postgres
+    environment:
+      POSTGRES_DB: easyops
+      POSTGRES_USER: easyops
+      POSTGRES_PASSWORD: easyops123
+      POSTGRES_MULTIPLE_DATABASES: easyops_test
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    volumes:
+      - postgres_liquibase_data:/var/lib/postgresql/data
+      - ./scripts/init-multiple-databases.sh:/docker-entrypoint-initdb.d/init-multiple-databases.sh
+    networks:
+      - liquibase-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U easyops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Test Database
+  postgres-test:
+    image: postgres:17
+    container_name: easyops-liquibase-postgres-test
+    environment:
+      POSTGRES_DB: easyops_test
+      POSTGRES_USER: easyops
+      POSTGRES_PASSWORD: easyops123
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    networks:
+      - liquibase-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U easyops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_liquibase_data:
+    driver: local
+  postgres_test_data:
+    driver: local
+
+networks:
+  liquibase-network:
+    driver: bridge

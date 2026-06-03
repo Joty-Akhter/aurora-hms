@@ -1,0 +1,304 @@
+spring:
+  application:
+    name: hospital-service
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+    drop-first: false
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:easyops}
+    username: ${POSTGRES_USER:easyops}
+    password: ${POSTGRES_PASSWORD:easyops123}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+  
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        default_schema: ehr
+        format_sql: true
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    show-sql: false
+  
+  cache:
+    type: none
+
+server:
+  port: 8100
+
+# Domain events: set HOSPITAL_KAFKA_EVENTS_ENABLED=true when Kafka is available. Otherwise
+# LoggingDomainEventPublisher is used and APIs are not blocked by Kafka producer timeouts.
+hospital:
+  doctor:
+    # Initial password for portal users created with "Create login user" (min 8 chars; user-management validation).
+    default-portal-user-password: ${HOSPITAL_DOCTOR_DEFAULT_PORTAL_PASSWORD:ChangeMeDoc1!}
+    # rbac.roles.code assigned to each new doctor portal user (view + prescribe + transmit + hospital view per Liquibase seeds).
+    prescribing-authority-role-code: ${HOSPITAL_DOCTOR_PRESCRIBING_ROLE_CODE:PRESCRIBING_AUTHORITY}
+    base-user-role-code: ${HOSPITAL_DOCTOR_BASE_USER_ROLE_CODE:USER}
+  kafka:
+    events:
+      enabled: ${HOSPITAL_KAFKA_EVENTS_ENABLED:false}
+  icd10:
+    bootstrap:
+      enabled: ${HOSPITAL_ICD10_BOOTSTRAP_ENABLED:true}
+      xml-path: ${HOSPITAL_ICD10_XML_PATH:}
+  # Patient identity card (PATIENT_IDENTITY) via hospital-card-management-service — see requirements/module-hospital/patient-identity-card-implementation-plan.md
+  patient-identity-card:
+    enabled: ${HOSPITAL_PATIENT_IDENTITY_CARD_ENABLED:true}
+    auto-issue-on-registration: ${HOSPITAL_PATIENT_IDENTITY_CARD_AUTO_ISSUE:true}
+    card-product-id: ${HOSPITAL_PATIENT_IDENTITY_CARD_PRODUCT_ID:a0000001-0001-4000-8000-000000000001}
+    # Optional: UUID of a service account used for Hospital Card Service calls when GET patient has no X-User-Id
+    # (e.g. scheduling Feign, pharmacy RestTemplate). Must be allowed to search PATIENT_IDENTITY cards in card-management.
+    get-patient-enrichment-user-id: ${HOSPITAL_PATIENT_IDENTITY_CARD_GET_PATIENT_ENRICHMENT_USER_ID:}
+    # Service key for internal card APIs (search/issue without user RBAC). Must match hospital-card.internal.service-key.
+    internal-service-key: ${HOSPITAL_CARD_INTERNAL_SERVICE_KEY:easyops-internal-hospital-card-key}
+  web-booking:
+    organization-id: ${HOSPITAL_WEB_BOOKING_ORGANIZATION_ID:a1b2c3d4-e5f6-4789-a012-a1b2c3d4e5f6}
+    # Optional override; when empty, scheduling.api user is resolved from users.users at startup.
+    scheduling-user-id: ${HOSPITAL_WEB_BOOKING_SCHEDULING_USER_ID:}
+
+notification:
+  sms:
+    # Imaging / hospital SMS — delivered via communication-service (Pondit configured there only).
+    enabled: ${HOSPITAL_SMS_ENABLED:false}
+
+# RBAC: same host pattern as auth-service (Docker service name or localhost:8084 in dev)
+services:
+  rbac:
+    base-url: ${RBAC_SERVICE_BASE_URL:http://localhost:8084}
+  scheduling:
+    base-url: ${SCHEDULING_SERVICE_BASE_URL:http://localhost:8093}
+  user-management:
+    base-url: ${USER_MANAGEMENT_SERVICE_BASE_URL:http://localhost:8082}
+  communication:
+    base-url: ${COMMUNICATION_SERVICE_BASE_URL:http://communication-service}
+  communication-internal-key: ${COMMUNICATION_INTERNAL_SERVICE_KEY:easyops-internal-communication-key}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    lease-renewal-interval-in-seconds: 30
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  health:
+    redis:
+      enabled: false
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG
+    org.springframework.web: INFO
+    org.hibernate: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# LIS (Laboratory Information System) Transmission Configuration
+lis:
+  transmission:
+    enabled: false  # Set to true to enable actual LIS transmission
+    endpoint: ""    # LIS endpoint URL (e.g., http://lis.example.com/api/orders)
+    method: HL7_V2  # HL7_V2 or HL7_FHIR
+    timeout: 30000  # Transmission timeout in milliseconds
+    retry:
+      enabled: true
+      maxAttempts: 3
+      delay: 5000   # Delay between retries in milliseconds
+
+# RIS/PACS (Radiology Information System / Picture Archiving and Communication System) Transmission Configuration
+ris:
+  pacs:
+    transmission:
+      enabled: false  # Set to true to enable actual RIS/PACS transmission
+      endpoint: ""    # RIS/PACS endpoint URL (e.g., http://ris.example.com/api/orders)
+      method: HL7_V2  # HL7_V2 or HL7_FHIR
+      timeout: 30000  # Transmission timeout in milliseconds
+      retry:
+        enabled: true
+        maxAttempts: 3
+        delay: 5000   # Delay between retries in milliseconds
+
+# Imaging Scheduling Configuration
+imaging:
+  scheduling:
+    enabled: false  # Set to true to enable external scheduling service integration
+    endpoint: ""    # Scheduling service endpoint (e.g., http://scheduling.example.com/api)
+    standalone-mode: true  # If true, scheduling works locally without external service
+
+# DICOM Worklist (Modality Worklist) Configuration
+dicom:
+  worklist:
+    enabled: false  # Set to true to enable DICOM worklist integration
+    endpoint: ""    # DICOM worklist server endpoint (e.g., http://dicom.example.com/mwl)
+    ae-title: EHR-MWL  # Application Entity Title for DICOM communication
+  
+  # DICOM Image Storage Configuration
+  storage:
+    enabled: true  # Enable DICOM file storage
+    base-path: ./storage/dicom  # Base path for DICOM file storage
+  
+  # DICOM Network Configuration (C-ECHO, C-STORE, C-FIND, C-MOVE, C-GET)
+  network:
+    enabled: false  # Set to true to enable DICOM network protocols
+    stub: true  # When true: C-ECHO/C-STORE fail without connecting; C-FIND returns []; C-MOVE/C-GET return stub failure. Set false + remote-host for live PACS.
+    ae-title: EHR-SCU  # Application Entity Title for DICOM network communication
+    port: 11112  # Local DICOM network port
+    host: localhost  # Local hostname
+    remote-ae-title: PACS  # Remote PACS Application Entity Title
+    remote-host: ""  # Remote PACS hostname (leave empty to disable)
+    remote-port: 104  # Remote PACS port (standard DICOM port)
+    cget:
+      receive-path: ./storage/dicom/network-cget  # Files received via C-GET are written here and auto-registered when study UID matches.
+  
+  # DICOM Thumbnail Configuration
+  thumbnail:
+    enabled: true  # Enable thumbnail generation
+    base-path: ./storage/dicom/thumbnails  # Base path for thumbnail storage
+    width: 256  # Thumbnail width in pixels
+    height: 256  # Thumbnail height in pixels
+    format: PNG  # Thumbnail format (PNG, JPG)
+
+# PBM (Pharmacy Benefit Manager) Integration Configuration
+pbm:
+  integration:
+    enabled: false  # Set to true to enable actual PBM integration
+    endpoint: ""    # PBM API endpoint (e.g., https://api.pbm.example.com/v1)
+    api-key: ""     # PBM API key for authentication
+    timeout: 30000  # Request timeout in milliseconds
+    retry:
+      enabled: true
+      maxAttempts: 3
+      delay: 5000   # Delay between retries in milliseconds
+
+# Drug Interaction Database Integration Configuration
+# When disabled, DrugInteractionDatabaseService uses built-in drug–drug rules; FR-P1.7 clinical
+# screening (disease, dosing, pregnancy, renal/hepatic) is always evaluated in ClinicalMedicationSafetyService.
+drug-interaction:
+  database:
+    enabled: false  # Set to true to enable external drug interaction database integration
+    provider: DRUGBANK  # DRUGBANK, MICROMEDEX, CUSTOM
+    endpoint: ""    # Drug interaction database API endpoint (e.g., https://api.drugbank.com/v1)
+    api-key: ""     # API key for authentication
+    timeout: 30000  # Request timeout in milliseconds
+    retry:
+      enabled: true
+      maxAttempts: 3
+      delay: 5000   # Delay between retries in milliseconds
+
+# PDMP (Prescription Drug Monitoring Program) Integration Configuration
+# PDMP_SIMULATE     — set to false for live state-PDMP queries (M3); true = local synthetic data only
+# PDMP_ENDPOINT     — full base URL; POST /query is invoked (see PDMPService.performRealPDMPQuery)
+# PDMP_API_KEY      — Bearer token for the gateway; keep out of source control
+# integration.timeout — connect + read timeout (ms) for the dedicated pdmpRestTemplate bean
+pdmp:
+  enabled: true
+  simulate: ${PDMP_SIMULATE:true}
+  integration:
+    endpoint: ${PDMP_ENDPOINT:}
+    api-key: ${PDMP_API_KEY:}
+    timeout: ${PDMP_TIMEOUT:30000}
+    retry:
+      enabled: true
+      maxAttempts: 3
+      delay: 5000
+
+# Fill-Status Inbound Webhook Authentication (FR-P3.11a)
+# Callers must present X-Webhook-Signature: sha256=<HMAC-SHA256(secret, body)>.
+# Per-integration secrets are stored in ehr.webhook_integrations.
+# Set auth.enabled=false ONLY for local dev; always true in staging/production.
+webhook:
+  fill-status:
+    auth:
+      enabled: ${WEBHOOK_FILL_STATUS_AUTH_ENABLED:true}
+
+# NCPDP SCRIPT 2017071 message builder (FR-P3.6)
+# test-mode: "Y" flag in Header/TestMessage; set to false only after Surescripts production certification.
+# In production, software-developer and software-product must match Surescripts registration.
+ncpdp:
+  sender:
+    software-developer: ${NCPDP_SOFTWARE_DEVELOPER:EasyOps}
+    software-product: ${NCPDP_SOFTWARE_PRODUCT:EasyOps EHR}
+    software-version: ${NCPDP_SOFTWARE_VERSION:1.0}
+  test-mode: ${NCPDP_TEST_MODE:true}
+
+# E-Prescribing Network Integration Configuration
+eprescribing:
+  enabled: true  # Enable e-prescribing
+  simulate: true  # Set to false to use actual e-prescribing network integration
+  network:
+    endpoint: ""    # E-prescribing network API endpoint (e.g., https://api.surescripts.com/v1)
+    api-key: ""     # Network API key for authentication
+    timeout: 30000  # Request timeout in milliseconds
+    retry:
+      enabled: true
+      maxAttempts: 3
+      delay: 5000   # Delay between retries in milliseconds
+
+---
+# Development Profile
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyops
+    username: easyops
+    password: easyops123
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE:http://localhost:8761/eureka/}
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: false
+    homePageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}
+    statusPageUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/info
+    healthCheckUrl: http://${EUREKA_INSTANCE_HOSTNAME:localhost}:${server.port}/actuator/health
+
+logging:
+  level:
+    root: INFO
+    com.easyops: DEBUG

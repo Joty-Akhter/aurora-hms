@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- Include all change sets organized by phases -->
+    
+    <!-- Phase 0: Core System Foundation -->
+    <include file="phase-0/001-initial-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/002-auth-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/002a-auth-session-token-length-fix.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/002b-increase-token-column-sizes.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/003-rbac-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/004-notifications.sql" relativeToChangelogFile="true"/>
+    <include file="phase-0/005-integration.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Phase 1: Accounting Module -->
+    <include file="phase-1/101-accounting-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-1/102-ar-ap-bank.sql" relativeToChangelogFile="true"/>
+    <include file="phase-1/103-fixes-and-updates.sql" relativeToChangelogFile="true"/>
+    <include file="phase-1/104-fix-bank-transactions.sql" relativeToChangelogFile="true"/>
+    <include file="phase-1/105-ar-credit-note-gl-journal.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Phase 2: Sales Module -->
+    <include file="phase-2/201-sales-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-2/202-sales-updates.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Phase 3: Inventory Module -->
+    <include file="phase-3/301-inventory-schema.sql" relativeToChangelogFile="true"/>
+    <include file="phase-3/302-reorder-automation.sql" relativeToChangelogFile="true"/>
+    <include file="phase-3/303-stock-transfers.sql" relativeToChangelogFile="true"/>
+    <include file="phase-3/304-alien-pharma-product-fields.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Phase 4: Purchase Module -->
+    <include file="schema/025-purchase-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/026-purchase-triggers-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/027-purchase-matching-logic.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Phase 5: HR Module -->
+    <include file="schema/028-hr-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/029-hr-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/030-hr-time-attendance-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/031-hr-time-attendance-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/032-hr-payroll-benefits-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/033-hr-payroll-benefits-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/034-hr-performance-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/035-hr-performance-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/051-hr-provident-fund-incentives-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/052-hr-sales-target-configuration-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/053-hr-advanced-incentives-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/054-hr-reporting-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/058-hr-employee-name-migration.sql" relativeToChangelogFile="true"/>
+    <include file="schema/059-hr-drop-old-name-columns.sql" relativeToChangelogFile="true"/>
+    <include file="schema/060-hr-relax-legacy-name-columns.sql" relativeToChangelogFile="true"/>
+    <include file="schema/061-hr-views-use-unified-name.sql" relativeToChangelogFile="true"/>
+    <include file="schema/062-hr-drop-legacy-name-columns.sql" relativeToChangelogFile="true"/>
+    <include file="schema/063-organization-app-data.sql" relativeToChangelogFile="true"/>
+    <include file="schema/064-organization-app-data-seed.sql" relativeToChangelogFile="true"/>
+    <include file="schema/066-hr-salary-structure-code.sql" relativeToChangelogFile="true"/>
+    <include file="schema/067-hr-salary-structure-ss02-allow-versioned-code.sql" relativeToChangelogFile="true"/>
+    <include file="schema/068-hr-salary-structure-is-default.sql" relativeToChangelogFile="true"/>
+    <include file="schema/069-hr-salary-grades-bands.sql" relativeToChangelogFile="true"/>
+    <include file="schema/070-hr-salary-audit-log.sql" relativeToChangelogFile="true"/>
+    <include file="schema/071-hr-position-default-structure-and-scope.sql" relativeToChangelogFile="true"/>
+    <include file="schema/072-hr-salary-structure-top-level-refactor.sql" relativeToChangelogFile="true"/>
+    <include file="schema/073-hr-salary-component-category.sql" relativeToChangelogFile="true"/>
+    <include file="schema/073-hr-salary-component-effective-display.sql" relativeToChangelogFile="true"/>
+    <include file="schema/074-hr-salary-component-payslip-label-currency.sql" relativeToChangelogFile="true"/>
+    <include file="schema/075-hr-salary-component-code-description.sql" relativeToChangelogFile="true"/>
+    <include file="schema/076-hr-salary-component-calculation-basis.sql" relativeToChangelogFile="true"/>
+    <include file="schema/077-hr-salary-component-statutory-taxability.sql" relativeToChangelogFile="true"/>
+    <include file="schema/078-hr-employee-salary-assignment.sql" relativeToChangelogFile="true"/>
+    <include file="schema/079-hr-employee-salary-detail-value-type.sql" relativeToChangelogFile="true"/>
+    <include file="schema/080-hr-salary-revision-reason-type.sql" relativeToChangelogFile="true"/>
+    <include file="schema/081-hr-salary-bulk-revision.sql" relativeToChangelogFile="true"/>
+    <include file="schema/082-hr-salary-component-proration.sql" relativeToChangelogFile="true"/>
+    <include file="schema/083-hr-payroll-component-display-order.sql" relativeToChangelogFile="true"/>
+    <include file="schema/084-hr-salary-batch-performance.sql" relativeToChangelogFile="true"/>
+    <include file="schema/086-hr-loan-categories-and-settings.sql" relativeToChangelogFile="true"/>
+    <include file="schema/087-hr-loan-applications.sql" relativeToChangelogFile="true"/>
+    <include file="schema/088-hr-employee-loans-schedule-repayments.sql" relativeToChangelogFile="true"/>
+    <include file="schema/089-hr-loan-repayment-payroll-run.sql" relativeToChangelogFile="true"/>
+    <include file="schema/090-hr-loan-settlement.sql" relativeToChangelogFile="true"/>
+    <include file="schema/091-hr-loan-audit-log.sql" relativeToChangelogFile="true"/>
+    <include file="schema/092-hr-loan-workflow-and-eligibility-settings.sql" relativeToChangelogFile="true"/>
+    <include file="schema/093-hr-loan-overrides-reversal-writeoff.sql" relativeToChangelogFile="true"/>
+    <include file="schema/094-hr-loan-installment-skip-reason.sql" relativeToChangelogFile="true"/>
+    <include file="schema/095-hr-loan-should-gaps-lc04-notifications-legal.sql" relativeToChangelogFile="true"/>
+    <include file="schema/096-hr-loan-ad03-pi05-coa-holiday.sql" relativeToChangelogFile="true"/>
+    <include file="schema/097-hr-epf-organization-policy.sql" relativeToChangelogFile="true"/>
+    <include file="schema/098-hr-salary-component-gl-accounts.sql" relativeToChangelogFile="true"/>
+    <include file="schema/099-hr-payroll-time-attendance-policy.sql" relativeToChangelogFile="true"/>
+    <include file="schema/100-organization-theme.sql" relativeToChangelogFile="true"/>
+    <include file="schema/101-users-email-nullable.sql" relativeToChangelogFile="true"/>
+    <!-- EPF Filing, Remittance, Audit and Exit Orchestration -->
+    <include file="schema/100-hr-epf-statutory-split.sql" relativeToChangelogFile="true"/>
+    <include file="schema/101-hr-epf-filing-workflow.sql" relativeToChangelogFile="true"/>
+    <include file="schema/102-hr-epf-remittance-tracking.sql" relativeToChangelogFile="true"/>
+    <include file="schema/103-hr-epf-corrections-audit.sql" relativeToChangelogFile="true"/>
+    <include file="schema/104-hr-epf-audit-events-ledger.sql" relativeToChangelogFile="true"/>
+    <include file="schema/104-hr-salary-overlap-db-constraints.sql" relativeToChangelogFile="true"/>
+    <include file="schema/105-hr-epf-exit-orchestration.sql" relativeToChangelogFile="true"/>
+    <include file="schema/106-hr-leave-staged-workflow.sql" relativeToChangelogFile="true"/>
+    <include file="schema/107-hr-department-leave-approval-matrix.sql" relativeToChangelogFile="true"/>
+    <include file="schema/108-hr-phase-b-leave-bridge-holiday-scope.sql" relativeToChangelogFile="true"/>
+    <include file="schema/109-hr-phase-c-shift-roster-ot-master-data.sql" relativeToChangelogFile="true"/>
+    <include file="schema/110-hr-bonus-payroll-linkage.sql" relativeToChangelogFile="true"/>
+    <include file="schema/111-hr-device-attendance.sql" relativeToChangelogFile="true"/>
+    <include file="schema/112-api-keys-schema.sql" relativeToChangelogFile="true"/>
+    <!-- CRM Module - Phase 6 -->
+    <include file="schema/036-crm-leads-accounts-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/037-crm-leads-accounts-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/038-crm-opportunities-pipeline-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/039-crm-opportunities-pipeline-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/040-crm-activities-campaigns-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/041-crm-activities-campaigns-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/042-crm-support-analytics-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/043-crm-support-analytics-views.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Manufacturing Module - Phase 7 -->
+    <include file="schema/044-manufacturing-bom-routing-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/045-manufacturing-bom-routing-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/046-manufacturing-work-orders-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/047-manufacturing-work-orders-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/048-manufacturing-quality-equipment-schema.sql" relativeToChangelogFile="true"/>
+    <include file="schema/049-manufacturing-quality-equipment-views.sql" relativeToChangelogFile="true"/>
+    <include file="schema/050-manufacturing-analytics-views.sql" relativeToChangelogFile="true"/>
+    
+    <!-- Pharma Module - Phase 8 -->
+    <include file="phase-3/306-fix-pharma-field-types.sql" relativeToChangelogFile="true"/>
+           <!-- Reference Data -->
+           <include file="data/001-default-roles.sql" relativeToChangelogFile="true"/>
+           <include file="data/002-default-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/003-system-config.sql" relativeToChangelogFile="true"/>
+           <include file="data/011-rbac-module-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/019-hr-employee-self-service-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/014-hr-loans-rbac-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/018-hr-pf-granular-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/012-sample-users-and-roles.sql" relativeToChangelogFile="true"/>
+           
+           <!-- Test Data (Development and Testing) -->
+           <include file="data/004-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/005-sales-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/006-accounting-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/007-inventory-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/008-expanded-product-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/013-update-product-pricing-pack-box-values.sql" relativeToChangelogFile="true"/>
+           <include file="data/009-crm-customer-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/010-purchase-test-data.sql" relativeToChangelogFile="true"/>
+           <include file="data/016-payroll-gl-accounts.sql" relativeToChangelogFile="true"/>
+           <include file="data/017-modules-config.sql" relativeToChangelogFile="true"/>
+<include file="data/018-org-admin-role-manage.sql" relativeToChangelogFile="true"/>
+           <include file="data/019-org-admin-permission-manage.sql" relativeToChangelogFile="true"/>
+           <include file="data/020-hospital-rbac-permissions.sql" relativeToChangelogFile="true"/>
+           <include file="data/021-scheduling-api-service-account.sql" relativeToChangelogFile="true"/>
+           <include file="data/022-fix-system-roles.sql" relativeToChangelogFile="true"/>
+           <include file="data/023-communication-rbac-permissions.sql" relativeToChangelogFile="true"/>
+
+    <!-- Drop box_size (removed from app); must run after data scripts that reference it -->
+    <include file="phase-3/307-drop-box-size-column.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

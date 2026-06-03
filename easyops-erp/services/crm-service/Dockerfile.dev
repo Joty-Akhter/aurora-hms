@@ -1,0 +1,39 @@
+# Build stage
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+
+# Copy parent pom and settings
+COPY pom.xml .
+COPY maven-settings.xml /root/.m2/settings.xml
+
+# Copy entire project for multi-module build
+COPY . .
+
+# Build the CRM service module
+RUN mvn clean package -pl services/crm-service -am -DskipTests spring-boot:repackage
+
+# Runtime stage
+FROM eclipse-temurin:21-jre
+WORKDIR /app
+
+# Copy the built jar
+COPY --from=build /app/services/crm-service/target/crm-service-1.0.0.jar app.jar
+
+# Expose port
+EXPOSE 8097
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
+
+
+
+
+
+
+
+
+
+
+
+
+

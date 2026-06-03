@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <!-- 
+        Initial Hospital EHR Schema
+        This changeset includes the complete hospital.sql schema file
+    -->
+    <changeSet id="001-initial-schema" author="hospital-service">
+        <!-- Allow checksum drift: this changeset includes hospital.sql; do not edit after release without a new changeset. -->
+        <validCheckSum>9:091c7e847d90956f51eccf166e458df9</validCheckSum>
+        <validCheckSum>9:cfc687923640fc49c8eceffcde327dde</validCheckSum>
+        <comment>Initial Hospital EHR database schema - includes all tables, indexes, triggers, and functions</comment>
+        <sqlFile path="hospital.sql" 
+                 relativeToChangelogFile="true"
+                 splitStatements="true" 
+                 stripComments="false"/>
+    </changeSet>
+
+</databaseChangeLog>

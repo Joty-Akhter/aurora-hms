@@ -1,0 +1,893 @@
+services:
+  # Database Services
+  postgres:
+    image: postgres:17
+    container_name: easyops-postgres
+    environment:
+      POSTGRES_DB: easyops
+      POSTGRES_USER: easyops
+      POSTGRES_PASSWORD: easyops123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+      # Note: Database initialization is now handled by Liquibase
+      # See database-versioning/ directory for migration scripts
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql.conf"]
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U easyops"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # mongodb:
+  #   image: mongo:7
+  #   container_name: easyops-mongodb
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: easyops
+  #     MONGO_INITDB_ROOT_PASSWORD: easyops123
+  #     MONGO_INITDB_DATABASE: easyops
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #     - ./infrastructure/docker/mongodb/init.js:/docker-entrypoint-initdb.d/init.js:ro
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "mongosh", "--eval", "db.runCommand('ping')"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: easyops-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Message Queue Services (Not needed for Phase 0.2)
+  # kafka:
+  #   image: confluentinc/cp-kafka:7.3.3
+  #   container_name: easyops-kafka
+  #   environment:
+  #     KAFKA_BROKER_ID: 1
+  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  #     KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+  #     KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+  #     KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+  #     KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+  #     KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+  #     KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+  #   ports:
+  #     - "9092:9092"
+  #   depends_on:
+  #     - zookeeper
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:latest
+  #   container_name: easyops-zookeeper
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
+  #   ports:
+  #     - "2181:2181"
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "nc", "-z", "localhost", "2181"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Active Kafka/Zookeeper stack for local domain events
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.3
+    container_name: easyops-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:7.3.3
+    container_name: easyops-kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 10s
+      retries: 12
+      start_period: 45s
+
+  # rabbitmq:
+  #   image: rabbitmq:3-management
+  #   container_name: easyops-rabbitmq
+  #   environment:
+  #     RABBITMQ_DEFAULT_USER: easyops
+  #     RABBITMQ_DEFAULT_PASS: easyops123
+  #   ports:
+  #     - "5672:5672"
+  #     - "15672:15672"
+  #   volumes:
+  #     - rabbitmq_data:/var/lib/rabbitmq
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "rabbitmq-diagnostics", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Search Engine (Not needed for Phase 0.2)
+  # elasticsearch:
+  #   image: elasticsearch:8.11.0
+  #   container_name: easyops-elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #     - xpack.security.enabled=false
+  #     - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  #   ports:
+  #     - "9200:9200"
+  #   volumes:
+  #     - elasticsearch_data:/usr/share/elasticsearch/data
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Database Migration Service
+  liquibase:
+    image: liquibase/liquibase:4.24
+    container_name: easyops-liquibase
+    volumes:
+      - ./database-versioning/changelog:/liquibase/changelog
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/easyops
+      LIQUIBASE_COMMAND_USERNAME: easyops
+      LIQUIBASE_COMMAND_PASSWORD: easyops123
+      LIQUIBASE_COMMAND_CHANGELOG_FILE: changelog/master-changelog.xml
+    command: ["sh", "-c", "sleep 10 && liquibase update"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    restart: "no"  # Run once and exit
+
+  # Development Tools
+  adminer:
+    image: adminer
+    container_name: easyops-adminer
+    ports:
+      - "8080:8080"
+    networks:
+      - easyops-network
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      # - mongodb
+
+  # Service Discovery
+  # NOTE: Eureka is now run locally via start-spring-services.bat/sh, not via Docker
+  # eureka:
+  #   build:
+  #     context: .
+  #     dockerfile: services/eureka/Dockerfile.dev
+  #   container_name: easyops-eureka
+  #   ports:
+  #     - "8761:8761"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #   networks:
+  #     - easyops-network
+  #   depends_on:
+  #     liquibase:
+  #       condition: service_completed_successfully
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+  #     interval: 15s
+  #     timeout: 10s
+  #     retries: 10
+  #     start_period: 60s
+
+  # API Gateway (Development)
+  # NOTE: API Gateway is now run locally via start-spring-services.bat/sh, not via Docker
+  # api-gateway:
+  #   build:
+  #     context: .
+  #     dockerfile: services/api-gateway/Dockerfile.dev
+  #   container_name: easyops-api-gateway
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #     - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+  #     - EUREKA_INSTANCE_HOSTNAME=localhost
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+  #     - SPRING_DATASOURCE_USERNAME=easyops
+  #     - SPRING_DATASOURCE_PASSWORD=easyops123
+  #     - JWT_SECRET=easyops-jwt-secret-key-change-this-in-production-minimum-256-bits
+  #   depends_on:
+  #     liquibase:
+  #       condition: service_completed_successfully
+  #     eureka:
+  #       condition: service_healthy
+  #     postgres:
+  #       condition: service_healthy
+  #   networks:
+  #     - easyops-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/actuator/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 120s
+
+  # User Management Service
+  user-management:
+    build:
+      context: .
+      dockerfile: services/user-management/Dockerfile.dev
+    container_name: easyops-user-management
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+    depends_on:
+      liquibase:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Authentication Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile.dev
+    container_name: easyops-auth-service
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - JWT_SECRET=easyops-jwt-secret-key-change-this-in-production-minimum-256-bits
+      - JWT_EXPIRATION=86400000
+      - JWT_REFRESH_EXPIRATION=604800000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RBAC Service
+  rbac-service:
+    build:
+      context: .
+      dockerfile: services/rbac-service/Dockerfile.dev
+    container_name: easyops-rbac-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8084/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Organization Service
+  organization-service:
+    build:
+      context: .
+      dockerfile: services/organization-service/Dockerfile.dev
+    container_name: easyops-organization-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8085/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Notification Service
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile.dev
+    container_name: easyops-notification-service
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - MAIL_HOST=mail.i2gether.com
+      - MAIL_PORT=465
+      - MAIL_USERNAME=easyops@i2gether.com
+      - MAIL_PASSWORD=x169up2fcu
+      - EMAIL_FROM=easyops@i2gether.com
+      - EMAIL_ENABLED=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8086/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Monitoring Service
+  monitoring-service:
+    build:
+      context: .
+      dockerfile: services/monitoring-service/Dockerfile.dev
+    container_name: easyops-monitoring-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8087/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Accounting Service (Phase 1.1)
+  accounting-service:
+    build:
+      context: .
+      dockerfile: services/accounting-service/Dockerfile.dev
+    container_name: easyops-accounting-service
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8088/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # AR Service (Phase 1.2 - Accounts Receivable)
+  ar-service:
+    build:
+      context: .
+      dockerfile: services/ar-service/Dockerfile.dev
+    container_name: easyops-ar-service
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - ACCOUNTING_SERVICE_BASE_URL=http://accounting-service:8088
+      - RBAC_SERVICE_BASE_URL=http://rbac-service:8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      accounting-service:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8090/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # AP Service (Phase 1.2 - Accounts Payable)
+  ap-service:
+    build:
+      context: .
+      dockerfile: services/ap-service/Dockerfile.dev
+    container_name: easyops-ap-service
+    ports:
+      - "8091:8091"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - ACCOUNTING_SERVICE_BASE_URL=http://accounting-service:8088
+      - RBAC_SERVICE_BASE_URL=http://rbac-service:8084
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      accounting-service:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8091/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Bank Service (Phase 1.2 - Bank & Cash Management)
+  bank-service:
+    build:
+      context: .
+      dockerfile: services/bank-service/Dockerfile.dev
+    container_name: easyops-bank-service
+    ports:
+      - "8092:8092"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8092/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sales-service:
+    build:
+      context: .
+      dockerfile: services/sales-service/Dockerfile.dev
+    container_name: easyops-sales-service
+    ports:
+      - "8093:8093"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - ACCOUNTING_SERVICE_URL=http://accounting-service:8088
+      - AR_SERVICE_URL=http://ar-service:8090
+      - NOTIFICATION_SERVICE_URL=http://notification-service:8086
+      - INVENTORY_SERVICE_URL=http://inventory-service:8094
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      accounting-service:
+        condition: service_healthy
+      ar-service:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8093/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Inventory Service (Phase 3.1)
+  inventory-service:
+    build:
+      context: .
+      dockerfile: services/inventory-service/Dockerfile.dev
+    container_name: easyops-inventory-service
+    ports:
+      - "8094:8094"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8094/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Purchase Service (Phase 4)
+  purchase-service:
+    build:
+      context: .
+      dockerfile: services/purchase-service/Dockerfile.dev
+    container_name: easyops-purchase-service
+    ports:
+      - "8095:8095"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - DB_HOST=postgres
+      - DB_NAME=easyops
+      - DB_USER=easyops
+      - DB_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ap-service:
+        condition: service_healthy
+      inventory-service:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8095/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # HR Service
+  hr-service:
+    build:
+      context: .
+      dockerfile: services/hr-service/Dockerfile.dev
+    container_name: easyops-hr-service
+    ports:
+      - "8096:8096"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - DB_HOST=postgres
+      - DB_NAME=easyops
+      - DB_USER=easyops
+      - DB_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8096/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # CRM Service (Phase 6.1)
+  crm-service:
+    build:
+      context: .
+      dockerfile: services/crm-service/Dockerfile.dev
+    container_name: easyops-crm-service
+    ports:
+      - "8097:8097"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - DB_HOST=postgres
+      - DB_NAME=easyops
+      - DB_USER=easyops
+      - DB_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8097/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  manufacturing-service:
+    build:
+      context: .
+      dockerfile: services/manufacturing-service/Dockerfile
+    container_name: easyops-manufacturing-service
+    ports:
+      - "8098:8098"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+      - DB_HOST=postgres
+      - DB_NAME=easyops
+      - DB_USER=easyops
+      - DB_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+      liquibase:
+        condition: service_completed_successfully
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8098/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Hospital EHR Service
+  hospital-service:
+    build:
+      context: .
+      dockerfile: services/hospital-service/Dockerfile.dev
+    container_name: easyops-hospital-service
+    ports:
+      - "8100:8100"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://admin:admin@eureka:8761/eureka
+      - EUREKA_INSTANCE_HOSTNAME=localhost
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/easyops
+      - SPRING_DATASOURCE_USERNAME=easyops
+      - SPRING_DATASOURCE_PASSWORD=easyops123
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - easyops-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8100/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend Development
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: easyops-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    # Gateway / Eureka usually run on the host (see scripts/start-*.sh). From inside the container,
+    # localhost is not the host — use host.docker.internal (Docker Desktop; Linux: host-gateway).
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # Same-origin in the browser (/api → Vite); proxy target is the gateway on the host machine.
+      # Overrides ./frontend/.env.development so Docker dev always hits local backend, not a remote URL.
+      - VITE_API_BASE_URL=
+      - VITE_AUTH_SERVICE_URL=
+      - VITE_DEV_PROXY_TARGET=http://host.docker.internal:8081
+      - VITE_APP_NAME=EasyOps ERP
+      - VITE_APP_VERSION=1.0.0
+      # Module Configuration: Use preset or explicit list
+      # Preset: alien-pharma (enables: inventory, hr, accounting, pharma)
+      # Explicit: VITE_ENABLE_MODULE=inventory,hr,accounting,pharma
+      # Backward compatibility: VITE_ENABLED_MODULES is also accepted.
+      - VITE_MODULE_PRESET=alien-pharma
+    networks:
+      - easyops-network
+    healthcheck:
+      # node:alpine has BusyBox wget; curl is often absent.
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  # Monitoring Stack
+  # Note: Prometheus and Grafana may have compatibility issues on some Windows Docker setups
+  # If they fail to start, you can access metrics directly from service endpoints
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    container_name: easyops-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - easyops-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.1.0
+    container_name: easyops-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SERVER_ROOT_URL=http://localhost:3001
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - easyops-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  # mongodb_data:
+  redis_data:
+  # rabbitmq_data:
+  # elasticsearch_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  easyops-network:
+    driver: bridge

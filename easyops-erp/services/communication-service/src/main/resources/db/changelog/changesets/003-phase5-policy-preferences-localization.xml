@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="communication-phase5-003-policy-preferences-localization" author="codex">
+        <sql>
+            ALTER TABLE communication.comm_delivery
+                ADD COLUMN IF NOT EXISTS template_locale VARCHAR(15),
+                ADD COLUMN IF NOT EXISTS policy_decision VARCHAR(32),
+                ADD COLUMN IF NOT EXISTS policy_reason VARCHAR(200);
+
+            UPDATE communication.comm_delivery
+               SET template_locale = COALESCE(template_locale, 'en'),
+                   policy_decision = COALESCE(policy_decision, 'ALLOWED'),
+                   policy_reason = COALESCE(policy_reason, 'MIGRATED_DEFAULT')
+             WHERE template_locale IS NULL
+                OR policy_decision IS NULL
+                OR policy_reason IS NULL;
+
+            CREATE INDEX IF NOT EXISTS idx_comm_delivery_policy_decision
+                ON communication.comm_delivery (policy_decision, created_at DESC);
+        </sql>
+        <rollback>
+            DROP INDEX IF EXISTS communication.idx_comm_delivery_policy_decision;
+            ALTER TABLE communication.comm_delivery
+                DROP COLUMN IF EXISTS template_locale,
+                DROP COLUMN IF EXISTS policy_decision,
+                DROP COLUMN IF EXISTS policy_reason;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
