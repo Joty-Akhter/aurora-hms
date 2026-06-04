@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 2,
+  "agentName": "aurora-hms-runner",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus21.actions.githubusercontent.com/ou34cI6aw1NVFA3RcxI3OZXL0t99CqzcSGZsg942HBOgzianlx/",
+  "gitHubUrl": "https://github.com/Joty-Akhter/aurora-hms",
+  "workFolder": "_work",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}
