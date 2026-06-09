@@ -11,51 +11,37 @@ jobs:
 
     steps:
       # -------------------------
-      # 1. Checkout code
+      # Checkout code
       # -------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
       # -------------------------
-      # 2. Debug structure
-      # -------------------------
-      - name: Show repository structure
-        run: dir
-
-      # -------------------------
-      # 3. Build all services
+      # Build project
       # -------------------------
       - name: Build Spring Boot project
         working-directory: easyops-erp
         run: mvn clean package -DskipTests
 
       # -------------------------
-      # 4. Show generated JARs (debug)
+      # List JARs (debug)
       # -------------------------
-      - name: List generated JARs
+      - name: List JAR files
         working-directory: easyops-erp
         run: Get-ChildItem -Recurse -Filter *.jar
 
       # -------------------------
-      # 5. Copy API Gateway JAR to VM
+      # Deploy Eureka to VM
       # -------------------------
-      - name: Deploy Eureka to VM
+      - name: Deploy Eureka
         shell: powershell
         run: |
-          scp "C:\work\aurora-hms\actions-runner\actions-runner-win-x64-2.334.0\_work\aurora-hms\aurora-hms\easyops-erp\services\eureka\target\*.jar" til@192.168.40.111:~/aurora-hms/eureka/app.jar
+          scp easyops-erp/services/eureka/target/*.jar til@192.168.40.111:~/aurora-hms/eureka/app.jar
 
       # -------------------------
-      # 6. Restart service on VM
+      # Restart Eureka on VM
       # -------------------------
-      - name: Restart Eureka on VM
+      - name: Restart Eureka
         shell: powershell
         run: |
-          ssh til@192.168.40.111 << 'EOF'
-            echo "Stopping old API Gateway..."
-            pkill -f api-gateway || true
-
-            echo "Starting new API Gateway..."
-            nohup java -jar ~/aurora-hms/eureka/app.jar > ~/aurora-hms/eureka/app.log 2>&1 &
-
-            echo "Eureka Deployment completed"
-          EOF
+          ssh til@192.168.40.111 "pkill -f eureka || true; nohup java -jar ~/aurora-hms/eureka/app.jar > ~/aurora-hms/eureka/eureka.log 2>&1 &"
