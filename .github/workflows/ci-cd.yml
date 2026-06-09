@@ -6,16 +6,56 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: self-hosted
 
     steps:
+      # -------------------------
+      # 1. Checkout code
+      # -------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show repo structure (debug)
+      # -------------------------
+      # 2. Debug structure
+      # -------------------------
+      - name: Show repository structure
         run: dir
 
+      # -------------------------
+      # 3. Build all services
+      # -------------------------
       - name: Build Spring Boot project
         working-directory: easyops-erp
         run: mvn clean package -DskipTests
+
+      # -------------------------
+      # 4. Show generated JARs (debug)
+      # -------------------------
+      - name: List generated JARs
+        working-directory: easyops-erp
+        run: dir /s *.jar
+
+      # -------------------------
+      # 5. Copy API Gateway JAR to VM
+      # -------------------------
+      - name: Deploy API Gateway to VM
+        shell: bash
+        run: |
+          scp easyops-erp/services/api-gateway/target/*.jar til@192.168.40.111:~/aurora-hms/api-gateway/app.jar
+
+      # -------------------------
+      # 6. Restart service on VM
+      # -------------------------
+      - name: Restart API Gateway on VM
+        shell: bash
+        run: |
+          ssh til@192.168.40.111 << 'EOF'
+            echo "Stopping old API Gateway..."
+            pkill -f api-gateway || true
+
+            echo "Starting new API Gateway..."
+            nohup java -jar ~/aurora-hms/api-gateway/app.jar > ~/aurora-hms/api-gateway/app.log 2>&1 &
+
+            echo "Deployment completed"
+          EOF
