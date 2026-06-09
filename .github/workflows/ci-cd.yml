@@ -44,4 +44,5 @@ jobs:
       - name: Restart Eureka
         shell: powershell
         run: |
-          ssh til@192.168.40.111 "pkill -f eureka || true; nohup java -jar ~/aurora-hms/eureka/app.jar > ~/aurora-hms/eureka/eureka.log 2>&1 &"
+           ssh til@192.168.40.111 "pkill -f eureka || true"
+           ssh til@192.168.40.111 "nohup java -jar ~/aurora-hms/eureka/app.jar > ~/aurora-hms/eureka/eureka.log 2>&1 &"
