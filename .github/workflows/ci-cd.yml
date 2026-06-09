@@ -34,7 +34,7 @@ jobs:
       # -------------------------
       - name: List generated JARs
         working-directory: easyops-erp
-        run: dir /s *.jar
+        run: Get-ChildItem -Recurse -Filter *.jar
 
       # -------------------------
       # 5. Copy API Gateway JAR to VM
@@ -42,7 +42,7 @@ jobs:
       - name: Deploy API Gateway to VM
         shell: bash
         run: |
-          scp easyops-erp/services/api-gateway/target/*.jar til@192.168.40.111:~/aurora-hms/api-gateway/app.jar
+          scp easyops-erp/services/eureka/target/*.jar til@192.168.40.111:~/aurora-hms/eureka/app.jar
 
       # -------------------------
       # 6. Restart service on VM
