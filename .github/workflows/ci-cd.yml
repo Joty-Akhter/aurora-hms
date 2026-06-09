@@ -40,14 +40,14 @@ jobs:
       # 5. Copy API Gateway JAR to VM
       # -------------------------
       - name: Deploy Eureka to VM
-        shell: bash
+        shell: powershell
         run: |
           scp "C:\work\aurora-hms\actions-runner\actions-runner-win-x64-2.334.0\_work\aurora-hms\aurora-hms\easyops-erp\services\eureka\target\*.jar" til@192.168.40.111:~/aurora-hms/eureka/app.jar
 
       # -------------------------
       # 6. Restart service on VM
       # -------------------------
-      - name: Restart API Gateway on VM
+      - name: Restart Eureka on VM
         shell: powershell
         run: |
           ssh til@192.168.40.111 << 'EOF'
